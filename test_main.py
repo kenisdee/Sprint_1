@@ -1,9 +1,9 @@
+import logging
 import os
 import time
 import unittest
 from io import StringIO
 from unittest.mock import patch
-import logging
 
 import pandas as pd
 
@@ -12,6 +12,7 @@ import data_plotting as dplt
 
 # Настройка логирования
 logging.basicConfig(level=logging.INFO, format='%(asctime)s - %(levelname)s - %(message)s')
+
 
 class TestMain(unittest.TestCase):
 
@@ -64,6 +65,7 @@ class TestMain(unittest.TestCase):
         # Очистка после теста
         os.remove('AAPL_1mo_stock_price_chart.png')
         logging.info("График успешно создан и сохранен.")
+
 
 if __name__ == "__main__":
     unittest.main()
