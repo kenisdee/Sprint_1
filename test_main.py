@@ -1,12 +1,14 @@
-import unittest
-import data_download as dd
-import data_plotting as dplt
-import pandas as pd
 import os
 import time
+import unittest
 from io import StringIO
-import sys
 from unittest.mock import patch
+
+import pandas as pd
+
+import data_download as dd
+import data_plotting as dplt
+
 
 class TestMain(unittest.TestCase):
 
@@ -42,6 +44,7 @@ class TestMain(unittest.TestCase):
         self.assertTrue(os.path.exists('AAPL_1mo_stock_price_chart.png'))
         # Очистка после теста
         os.remove('AAPL_1mo_stock_price_chart.png')
+
 
 if __name__ == "__main__":
     unittest.main()
