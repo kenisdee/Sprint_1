@@ -9,28 +9,36 @@ def notify_if_strong_fluctuations(data, threshold):
     :param data: DataFrame с данными о ценах закрытия акций.
     :param threshold: Порог колебаний в процентах.
     """
-    # Проверка наличия столбца 'Close' в данных
     if 'Close' not in data.columns:
         print("Столбец 'Close' отсутствует в данных.")
         return
 
-    # Проверка на пустые данные
     if data.empty:
         print("Данные пусты.")
         return
 
-    # Вычисление максимальной и минимальной цены закрытия
     max_price = data['Close'].max()
     min_price = data['Close'].min()
-
-    # Вычисление процента колебаний
     fluctuation = ((max_price - min_price) / min_price) * 100
 
-    # Уведомление о сильных колебаниях или их отсутствии
     if fluctuation > threshold:
         print(f"Обнаружены сильные колебания цены акций: {fluctuation:.2f}% (порог: {threshold}%)")
     else:
         print(f"Колебания цены акций в пределах нормы: {fluctuation:.2f}% (порог: {threshold}%)")
+
+
+def export_data_to_csv(data, filename):
+    """
+    Экспортирует данные об акциях в CSV файл.
+
+    :param data: DataFrame с данными о ценах акций.
+    :param filename: Имя файла для сохранения данных.
+    """
+    # Сохранение данных в CSV файл
+    data.to_csv(filename)
+
+    # Вывод сообщения о том, что данные сохранены
+    print(f"Данные успешно экспортированы в файл {filename}")
 
 
 def main():
@@ -67,6 +75,10 @@ def main():
 
         # Построение графика данных
         dplt.create_and_save_plot(stock_data, ticker, period)
+
+        # Экспорт данных в CSV файл
+        csv_filename = f"{ticker}_{period}_stock_data.csv"
+        export_data_to_csv(stock_data, csv_filename)
 
     except ValueError as ve:
         print(f"Ошибка ввода данных: {ve}")
