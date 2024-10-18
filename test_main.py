@@ -15,6 +15,7 @@ from main import notify_if_strong_fluctuations
 logging.basicConfig(level=logging.INFO, format='%(asctime)s - %(levelname)s - %(message)s')
 
 
+
 class TestMain(unittest.TestCase):
 
     def setUp(self):

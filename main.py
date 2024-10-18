@@ -2,6 +2,7 @@ import data_download as dd
 import data_plotting as dplt
 
 
+
 def notify_if_strong_fluctuations(data, threshold):
     """
     Анализирует данные и уведомляет пользователя, если цена акций колебалась более чем на заданный процент за период.
