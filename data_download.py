@@ -1,7 +1,6 @@
 import yfinance as yf
 
 
-
 def fetch_stock_data(ticker, period='1mo'):
     """
     Загружает исторические данные о ценах акций с помощью библиотеки yfinance.

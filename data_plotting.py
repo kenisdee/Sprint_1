@@ -2,7 +2,6 @@ import matplotlib.pyplot as plt
 import pandas as pd
 
 
-
 def create_and_save_plot(data, ticker, period, filename=None):
     """
     Создает и сохраняет график цены акций с течением времени.
