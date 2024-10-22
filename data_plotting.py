@@ -11,14 +11,14 @@ def create_and_save_plot(data, ticker, period, filename=None):
     :param filename: Имя файла для сохранения графика (по умолчанию генерируется автоматически).
     """
     # Создание фигуры для графика
-    fig, (ax1, ax2, ax3, ax4, ax5, ax6, ax7, ax8, ax9, ax10) = plt.subplots(10, 1, sharex=True, figsize=(14, 28))
+    fig, (ax1, ax2, ax3, ax4, ax5, ax6, ax7, ax8, ax9, ax10, ax11, ax12) = plt.subplots(12, 1, sharex=True, figsize=(14, 32))
 
     # Проверка наличия столбца 'Date' в данных
     if 'Date' not in data:
         # Если 'Date' отсутствует, проверяем индекс на тип datetime
         if pd.api.types.is_datetime64_any_dtype(data.index):
             dates = data.index.to_numpy()
-            ax1.plot(dates, data['Close'].values, label='Закрытие цены')
+            ax1.plot(dates, data['Close'].values, label='Цена закрытия')
             ax1.plot(dates, data['Moving_Average'].values, label='Скользящее среднее', linestyle='--')
             ax1.plot(dates, data['Bollinger_Upper'].values, label='Верхняя полоса Боллинджера', linestyle='--', color='red')
             ax1.plot(dates, data['Bollinger_Lower'].values, label='Нижняя полоса Боллинджера', linestyle='--', color='green')
@@ -104,6 +104,20 @@ def create_and_save_plot(data, ticker, period, filename=None):
     ax10.set_xlabel("Дата")
     ax10.set_ylabel("Цена")
     ax10.legend()
+
+    # График VWAP
+    ax11.plot(data.index, data['VWAP'], label='VWAP (Средневзвешенная по объему цена)', color='cyan')
+    ax11.set_title('VWAP (Средневзвешенная по объему цена)')
+    ax11.set_xlabel("Дата")
+    ax11.set_ylabel("VWAP")
+    ax11.legend()
+
+    # График ATR
+    ax12.plot(data.index, data['ATR'], label='ATR (Средний истинный диапазон)', color='magenta')
+    ax12.set_title('ATR (Средний истинный диапазон)')
+    ax12.set_xlabel("Дата")
+    ax12.set_ylabel("ATR")
+    ax12.legend()
 
     # Генерация имени файла, если оно не было предоставлено
     if filename is None:
