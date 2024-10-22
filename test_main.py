@@ -14,6 +14,11 @@ from main import notify_if_strong_fluctuations, export_data_to_csv
 # Настройка логирования
 logging.basicConfig(level=logging.INFO, format='%(asctime)s - %(levelname)s - %(message)s')
 
+# Добавление обработчика для записи логов в файл
+file_handler = logging.FileHandler('test_log.log')
+file_handler.setFormatter(logging.Formatter('%(asctime)s - %(levelname)s - %(message)s'))
+logging.getLogger().addHandler(file_handler)
+
 # Словарь для сопоставления имен тестов с их описаниями
 test_descriptions = {
     'test_fetch_stock_data': 'Загрузка данных',

@@ -1,6 +1,105 @@
 import matplotlib.pyplot as plt
 import pandas as pd
 
+def plot_price_and_moving_average(ax, data):
+    """Построение графика цены закрытия и скользящего среднего."""
+    if 'Date' not in data:
+        if pd.api.types.is_datetime64_any_dtype(data.index):
+            dates = data.index.to_numpy()
+            ax.plot(dates, data['Close'].values, label='Цена закрытия')
+            ax.plot(dates, data['Moving_Average'].values, label='Скользящее среднее', linestyle='--')
+            ax.plot(dates, data['Bollinger_Upper'].values, label='Верхняя полоса Боллинджера', linestyle='--', color='red')
+            ax.plot(dates, data['Bollinger_Lower'].values, label='Нижняя полоса Боллинджера', linestyle='--', color='green')
+        else:
+            print("Информация о дате отсутствует или не имеет распознаваемого формата.")
+            return
+    else:
+        if not pd.api.types.is_datetime64_any_dtype(data['Date']):
+            data['Date'] = pd.to_datetime(data['Date'])
+        ax.plot(data['Date'], data['Close'], label='Закрытие цены')
+        ax.plot(data['Date'], data['Moving_Average'], label='Скользящее среднее', linestyle='--')
+        ax.plot(data['Date'], data['Bollinger_Upper'], label='Верхняя полоса Боллинджера', linestyle='--', color='red')
+        ax.plot(data['Date'], data['Bollinger_Lower'], label='Нижняя полоса Боллинджера', linestyle='--', color='green')
+    ax.set_ylabel("Цена")
+    ax.legend()
+
+def plot_rsi(ax, data):
+    """Построение графика RSI."""
+    ax.plot(data.index, data['RSI'], label='RSI (Индекс относительной силы)', color='orange')
+    ax.axhline(30, linestyle='--', alpha=0.5, color='red')
+    ax.axhline(70, linestyle='--', alpha=0.5, color='red')
+    ax.set_ylabel("RSI")
+    ax.legend()
+
+def plot_macd(ax, data):
+    """Построение графика MACD."""
+    ax.plot(data.index, data['MACD'], label='MACD (Схождение — расхождение скользящих средних)', color='blue')
+    ax.plot(data.index, data['Signal'], label='Сигнал', color='red')
+    ax.set_ylabel("MACD")
+    ax.legend()
+
+def plot_stochastic_oscillator(ax, data):
+    """Построение графика Stochastic Oscillator."""
+    ax.plot(data.index, data['Stochastic_K'], label='Stochastic %K (Быстрый стохастик)', color='purple')
+    ax.plot(data.index, data['Stochastic_D'], label='Stochastic %D (Медленный стохастик)', color='brown')
+    ax.set_ylabel("Stochastic")
+    ax.legend()
+
+def plot_obv(ax, data):
+    """Построение графика OBV."""
+    ax.plot(data.index, data['OBV'], label='OBV (Индикатор балансового объема)', color='black')
+    ax.set_ylabel("OBV")
+    ax.legend()
+
+def plot_cci(ax, data):
+    """Построение графика CCI."""
+    ax.plot(data.index, data['CCI'], label='CCI (Индекс товарного канала)', color='cyan')
+    ax.set_ylabel("CCI")
+    ax.legend()
+
+def plot_mfi(ax, data):
+    """Построение графика MFI."""
+    ax.plot(data.index, data['MFI'], label='MFI (Индекс денежного потока)', color='magenta')
+    ax.set_ylabel("MFI")
+    ax.legend()
+
+def plot_adl(ax, data):
+    """Построение графика ADL."""
+    ax.plot(data.index, data['ADL'], label='ADL (Линия накопления/распределения)', color='yellow')
+    ax.set_ylabel("ADL")
+    ax.legend()
+
+def plot_parabolic_sar(ax, data):
+    """Построение графика Parabolic SAR."""
+    ax.plot(data.index, data['Parabolic_SAR'], label='Parabolic SAR (Параболическая система SAR)', color='green')
+    ax.set_ylabel("Parabolic SAR")
+    ax.legend()
+
+def plot_ichimoku_cloud(ax, data):
+    """Построение графика Ichimoku Cloud."""
+    ax.plot(data.index, data['Ichimoku_Conversion'], label='Tenkan-sen (Тенкан-сен)', color='blue')
+    ax.plot(data.index, data['Ichimoku_Base'], label='Kijun-sen (Киджун-сен)', color='red')
+    ax.plot(data.index, data['Ichimoku_Leading_Span_A'], label='Senkou Span A (Сенкой спан A)', color='green', linestyle='--')
+    ax.plot(data.index, data['Ichimoku_Leading_Span_B'], label='Senkou Span B (Сенкой спан B)', color='purple', linestyle='--')
+    ax.plot(data.index, data['Ichimoku_Lagging_Span'], label='Chikou Span (Чикоу спан)', color='orange')
+    ax.fill_between(data.index, data['Ichimoku_Leading_Span_A'], data['Ichimoku_Leading_Span_B'],
+                    where=data['Ichimoku_Leading_Span_A'] >= data['Ichimoku_Leading_Span_B'], color='lightgreen', alpha=0.5)
+    ax.fill_between(data.index, data['Ichimoku_Leading_Span_A'], data['Ichimoku_Leading_Span_B'],
+                    where=data['Ichimoku_Leading_Span_A'] < data['Ichimoku_Leading_Span_B'], color='lightcoral', alpha=0.5)
+    ax.set_ylabel("Цена")
+    ax.legend()
+
+def plot_vwap(ax, data):
+    """Построение графика VWAP."""
+    ax.plot(data.index, data['VWAP'], label='VWAP (Средневзвешенная по объему цена)', color='cyan')
+    ax.set_ylabel("VWAP")
+    ax.legend()
+
+def plot_atr(ax, data):
+    """Построение графика ATR."""
+    ax.plot(data.index, data['ATR'], label='ATR (Средний истинный диапазон)', color='magenta')
+    ax.set_ylabel("ATR")
+    ax.legend()
 
 def create_and_save_plot(data, ticker, period, filename=None):
     """
@@ -12,123 +111,58 @@ def create_and_save_plot(data, ticker, period, filename=None):
     :param filename: Имя файла для сохранения графика (по умолчанию генерируется автоматически).
     """
     # Создание фигуры для графика
-    fig, (ax1, ax2, ax3, ax4, ax5, ax6, ax7, ax8, ax9, ax10, ax11, ax12) = plt.subplots(12, 1, sharex=True,
-                                                                                        figsize=(14, 32))
+    fig, axes = plt.subplots(12, 1, sharex=True, figsize=(14, 32))
 
-    # Проверка наличия столбца 'Date' в данных
-    if 'Date' not in data:
-        # Если 'Date' отсутствует, проверяем индекс на тип datetime
-        if pd.api.types.is_datetime64_any_dtype(data.index):
-            dates = data.index.to_numpy()
-            ax1.plot(dates, data['Close'].values, label='Цена закрытия')
-            ax1.plot(dates, data['Moving_Average'].values, label='Скользящее среднее', linestyle='--')
-            ax1.plot(dates, data['Bollinger_Upper'].values, label='Верхняя полоса Боллинджера', linestyle='--',
-                     color='red')
-            ax1.plot(dates, data['Bollinger_Lower'].values, label='Нижняя полоса Боллинджера', linestyle='--',
-                     color='green')
-        else:
-            print("Информация о дате отсутствует или не имеет распознаваемого формата.")
+    # Проверка наличия необходимых столбцов
+    required_columns = ['Close', 'Moving_Average', 'Bollinger_Upper', 'Bollinger_Lower', 'RSI', 'MACD', 'Signal',
+                        'Stochastic_K', 'Stochastic_D', 'OBV', 'CCI', 'MFI', 'ADL', 'Parabolic_SAR',
+                        'Ichimoku_Conversion', 'Ichimoku_Base', 'Ichimoku_Leading_Span_A', 'Ichimoku_Leading_Span_B',
+                        'Ichimoku_Lagging_Span', 'VWAP', 'ATR']
+    for column in required_columns:
+        if column not in data.columns:
+            print(f"Столбец '{column}' отсутствует в данных.")
             return
-    else:
-        # Если 'Date' присутствует, проверяем его на тип datetime
-        if not pd.api.types.is_datetime64_any_dtype(data['Date']):
-            data['Date'] = pd.to_datetime(data['Date'])
-        ax1.plot(data['Date'], data['Close'], label='Закрытие цены')
-        ax1.plot(data['Date'], data['Moving_Average'], label='Скользящее среднее', linestyle='--')
-        ax1.plot(data['Date'], data['Bollinger_Upper'], label='Верхняя полоса Боллинджера', linestyle='--', color='red')
-        ax1.plot(data['Date'], data['Bollinger_Lower'], label='Нижняя полоса Боллинджера', linestyle='--',
-                 color='green')
 
-    # Настройка заголовка и меток осей для первого графика
-    ax1.set_title(f"{ticker} Цена акций с течением времени")
-    ax1.set_ylabel("Цена")
-    ax1.legend()
+    # Построение графиков
+    plot_price_and_moving_average(axes[0], data)
+    axes[0].set_title(f"{ticker} Цена акций с течением времени")
 
-    # График RSI
-    ax2.plot(data.index, data['RSI'], label='RSI (Индекс относительной силы)', color='orange')
-    ax2.set_title('RSI (Индекс относительной силы)')
-    ax2.axhline(30, linestyle='--', alpha=0.5, color='red')
-    ax2.axhline(70, linestyle='--', alpha=0.5, color='red')
-    ax2.set_ylabel("RSI")
-    ax2.legend()
+    plot_rsi(axes[1], data)
+    axes[1].set_title('RSI (Индекс относительной силы)')
 
-    # График MACD
-    ax3.plot(data.index, data['MACD'], label='MACD (Схождение — расхождение скользящих средних)', color='blue')
-    ax3.plot(data.index, data['Signal'], label='Сигнал', color='red')
-    ax3.set_title('MACD (Схождение — расхождение скользящих средних)')
-    ax3.set_ylabel("MACD")
-    ax3.legend()
+    plot_macd(axes[2], data)
+    axes[2].set_title('MACD (Схождение — расхождение скользящих средних)')
 
-    # График Stochastic Oscillator
-    ax4.plot(data.index, data['Stochastic_K'], label='Stochastic %K (Быстрый стохастик)', color='purple')
-    ax4.plot(data.index, data['Stochastic_D'], label='Stochastic %D (Медленный стохастик)', color='brown')
-    ax4.set_title('Stochastic Oscillator (Стохастический Осциллятор)')
-    ax4.set_ylabel("Stochastic")
-    ax4.legend()
+    plot_stochastic_oscillator(axes[3], data)
+    axes[3].set_title('Stochastic Oscillator (Стохастический Осциллятор)')
 
-    # График OBV
-    ax5.plot(data.index, data['OBV'], label='OBV (Индикатор балансового объема)', color='black')
-    ax5.set_title('Индикатор балансового объема (OBV)')
-    ax5.set_ylabel("OBV")
-    ax5.legend()
+    plot_obv(axes[4], data)
+    axes[4].set_title('Индикатор балансового объема (OBV)')
 
-    # График CCI
-    ax6.plot(data.index, data['CCI'], label='CCI (Индекс товарного канала)', color='cyan')
-    ax6.set_title('Индекс товарного канала (CCI)')
-    ax6.set_ylabel("CCI")
-    ax6.legend()
+    plot_cci(axes[5], data)
+    axes[5].set_title('Индекс товарного канала (CCI)')
 
-    # График MFI
-    ax7.plot(data.index, data['MFI'], label='MFI (Индекс денежного потока)', color='magenta')
-    ax7.set_title('Индекс денежного потока (MFI)')
-    ax7.set_ylabel("MFI")
-    ax7.legend()
+    plot_mfi(axes[6], data)
+    axes[6].set_title('Индекс денежного потока (MFI)')
 
-    # График ADL
-    ax8.plot(data.index, data['ADL'], label='ADL (Линия накопления/распределения)', color='yellow')
-    ax8.set_title('Линия накопления/распределения (ADL)')
-    ax8.set_ylabel("ADL")
-    ax8.legend()
+    plot_adl(axes[7], data)
+    axes[7].set_title('Линия накопления/распределения (ADL)')
 
-    # График Parabolic SAR
-    ax9.plot(data.index, data['Parabolic_SAR'], label='Parabolic SAR (Параболическая система SAR)', color='green')
-    ax9.set_title('Параболическая система SAR')
-    ax9.set_xlabel("Дата")
-    ax9.set_ylabel("Parabolic SAR")
-    ax9.legend()
+    plot_parabolic_sar(axes[8], data)
+    axes[8].set_title('Параболическая система SAR')
+    axes[8].set_xlabel("Дата")
 
-    # График Ichimoku Cloud
-    ax10.plot(data.index, data['Ichimoku_Conversion'], label='Tenkan-sen (Тенкан-сен)', color='blue')
-    ax10.plot(data.index, data['Ichimoku_Base'], label='Kijun-sen (Киджун-сен)', color='red')
-    ax10.plot(data.index, data['Ichimoku_Leading_Span_A'], label='Senkou Span A (Сенкой спан A)', color='green',
-              linestyle='--')
-    ax10.plot(data.index, data['Ichimoku_Leading_Span_B'], label='Senkou Span B (Сенкой спан B)', color='purple',
-              linestyle='--')
-    ax10.plot(data.index, data['Ichimoku_Lagging_Span'], label='Chikou Span (Чикоу спан)', color='orange')
-    ax10.fill_between(data.index, data['Ichimoku_Leading_Span_A'], data['Ichimoku_Leading_Span_B'],
-                      where=data['Ichimoku_Leading_Span_A'] >= data['Ichimoku_Leading_Span_B'], color='lightgreen',
-                      alpha=0.5)
-    ax10.fill_between(data.index, data['Ichimoku_Leading_Span_A'], data['Ichimoku_Leading_Span_B'],
-                      where=data['Ichimoku_Leading_Span_A'] < data['Ichimoku_Leading_Span_B'], color='lightcoral',
-                      alpha=0.5)
-    ax10.set_title('Ichimoku Cloud (Облако Ишимоку)')
-    ax10.set_xlabel("Дата")
-    ax10.set_ylabel("Цена")
-    ax10.legend()
+    plot_ichimoku_cloud(axes[9], data)
+    axes[9].set_title('Ichimoku Cloud (Облако Ишимоку)')
+    axes[9].set_xlabel("Дата")
 
-    # График VWAP
-    ax11.plot(data.index, data['VWAP'], label='VWAP (Средневзвешенная по объему цена)', color='cyan')
-    ax11.set_title('VWAP (Средневзвешенная по объему цена)')
-    ax11.set_xlabel("Дата")
-    ax11.set_ylabel("VWAP")
-    ax11.legend()
+    plot_vwap(axes[10], data)
+    axes[10].set_title('VWAP (Средневзвешенная по объему цена)')
+    axes[10].set_xlabel("Дата")
 
-    # График ATR
-    ax12.plot(data.index, data['ATR'], label='ATR (Средний истинный диапазон)', color='magenta')
-    ax12.set_title('ATR (Средний истинный диапазон)')
-    ax12.set_xlabel("Дата")
-    ax12.set_ylabel("ATR")
-    ax12.legend()
+    plot_atr(axes[11], data)
+    axes[11].set_title('ATR (Средний истинный диапазон)')
+    axes[11].set_xlabel("Дата")
 
     # Генерация имени файла, если оно не было предоставлено
     if filename is None:
