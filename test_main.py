@@ -24,7 +24,17 @@ test_descriptions = {
     'test_notify_no_strong_fluctuations': 'Отсутствие уведомления о сильных колебаниях',
     'test_notify_missing_column': 'Отсутствие столбца "Close"',
     'test_notify_empty_data': 'Пустые данные',
-    'test_export_data_to_csv': 'Экспорт данных в CSV файл'
+    'test_export_data_to_csv': 'Экспорт данных в CSV файл',
+    'test_calculate_cci': 'Расчет CCI',
+    'test_calculate_mfi': 'Расчет MFI',
+    'test_calculate_adl': 'Расчет ADL',
+    'test_calculate_parabolic_sar': 'Расчет Parabolic SAR',
+    'test_calculate_ichimoku_cloud': 'Расчет Ichimoku Cloud',
+    'test_calculate_rsi': 'Расчет RSI',
+    'test_calculate_macd': 'Расчет MACD',
+    'test_calculate_stochastic_oscillator': 'Расчет Stochastic Oscillator',
+    'test_calculate_obv': 'Расчет OBV',
+    'test_calculate_bollinger_bands': 'Расчет Bollinger Bands'
 }
 
 
@@ -129,6 +139,98 @@ class TestMain(unittest.TestCase):
         # Очистка после теста
         os.remove(csv_filename)
         logging.info("Данные успешно экспортированы и проверены.")
+
+    def test_calculate_cci(self):
+        """Тестирование расчета CCI."""
+        stock_data = dd.fetch_stock_data('AAPL', '1mo')
+        cci = dd.calculate_cci(stock_data)
+        self.assertIn('CCI', stock_data.columns)
+        self.assertIsInstance(cci, pd.Series)
+        logging.info("CCI успешно рассчитан.")
+
+    def test_calculate_mfi(self):
+        """Тестирование расчета MFI."""
+        stock_data = dd.fetch_stock_data('AAPL', '1mo')
+        mfi = dd.calculate_mfi(stock_data)
+        self.assertIn('MFI', stock_data.columns)
+        self.assertIsInstance(mfi, pd.Series)
+        logging.info("MFI успешно рассчитан.")
+
+    def test_calculate_adl(self):
+        """Тестирование расчета ADL."""
+        stock_data = dd.fetch_stock_data('AAPL', '1mo')
+        adl = dd.calculate_adl(stock_data)
+        self.assertIn('ADL', stock_data.columns)
+        self.assertIsInstance(adl, pd.Series)
+        logging.info("ADL успешно рассчитан.")
+
+    def test_calculate_parabolic_sar(self):
+        """Тестирование расчета Parabolic SAR."""
+        stock_data = dd.fetch_stock_data('AAPL', '1mo')
+        parabolic_sar = dd.calculate_parabolic_sar(stock_data)
+        self.assertIn('Parabolic_SAR', stock_data.columns)
+        self.assertIsInstance(parabolic_sar, pd.Series)
+        logging.info("Parabolic SAR успешно рассчитан.")
+
+    def test_calculate_ichimoku_cloud(self):
+        """Тестирование расчета Ichimoku Cloud."""
+        stock_data = dd.fetch_stock_data('AAPL', '1mo')
+        ichimoku_cloud = dd.calculate_ichimoku_cloud(stock_data)
+        self.assertIn('Ichimoku_Conversion', stock_data.columns)
+        self.assertIn('Ichimoku_Base', stock_data.columns)
+        self.assertIn('Ichimoku_Leading_Span_A', stock_data.columns)
+        self.assertIn('Ichimoku_Leading_Span_B', stock_data.columns)
+        self.assertIn('Ichimoku_Lagging_Span', stock_data.columns)
+        self.assertIsInstance(ichimoku_cloud, tuple)
+        logging.info("Ichimoku Cloud успешно рассчитан.")
+
+    def test_calculate_rsi(self):
+        """Тестирование расчета RSI."""
+        stock_data = dd.fetch_stock_data('AAPL', '1mo')
+        rsi = dd.calculate_rsi(stock_data)
+        self.assertIn('RSI', stock_data.columns)
+        self.assertIsInstance(rsi, pd.Series)
+        logging.info("RSI успешно рассчитан.")
+
+    def test_calculate_macd(self):
+        """Тестирование расчета MACD."""
+        stock_data = dd.fetch_stock_data('AAPL', '1mo')
+        macd, signal = dd.calculate_macd(stock_data)
+        self.assertIn('MACD', stock_data.columns)
+        self.assertIn('Signal', stock_data.columns)
+        self.assertIsInstance(macd, pd.Series)
+        self.assertIsInstance(signal, pd.Series)
+        logging.info("MACD успешно рассчитан.")
+
+    def test_calculate_stochastic_oscillator(self):
+        """Тестирование расчета Stochastic Oscillator."""
+        stock_data = dd.fetch_stock_data('AAPL', '1mo')
+        stochastic_k, stochastic_d = dd.calculate_stochastic_oscillator(stock_data)
+        self.assertIn('Stochastic_K', stock_data.columns)
+        self.assertIn('Stochastic_D', stock_data.columns)
+        self.assertIsInstance(stochastic_k, pd.Series)
+        self.assertIsInstance(stochastic_d, pd.Series)
+        logging.info("Stochastic Oscillator успешно рассчитан.")
+
+    def test_calculate_obv(self):
+        """Тестирование расчета OBV."""
+        stock_data = dd.fetch_stock_data('AAPL', '1mo')
+        obv = dd.calculate_obv(stock_data)
+        self.assertIn('OBV', stock_data.columns)
+        self.assertIsInstance(obv, pd.Series)
+        logging.info("OBV успешно рассчитан.")
+
+    def test_calculate_bollinger_bands(self):
+        """Тестирование расчета Bollinger Bands."""
+        stock_data = dd.fetch_stock_data('AAPL', '1mo')
+        upper_band, middle_band, lower_band = dd.calculate_bollinger_bands(stock_data)
+        self.assertIn('Bollinger_Upper', stock_data.columns)
+        self.assertIn('Bollinger_Middle', stock_data.columns)
+        self.assertIn('Bollinger_Lower', stock_data.columns)
+        self.assertIsInstance(upper_band, pd.Series)
+        self.assertIsInstance(middle_band, pd.Series)
+        self.assertIsInstance(lower_band, pd.Series)
+        logging.info("Bollinger Bands успешно рассчитаны.")
 
 
 if __name__ == "__main__":
