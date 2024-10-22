@@ -1,6 +1,7 @@
 import matplotlib.pyplot as plt
 import pandas as pd
 
+
 def create_and_save_plot(data, ticker, period, filename=None):
     """
     Создает и сохраняет график цены акций с течением времени.
@@ -11,7 +12,8 @@ def create_and_save_plot(data, ticker, period, filename=None):
     :param filename: Имя файла для сохранения графика (по умолчанию генерируется автоматически).
     """
     # Создание фигуры для графика
-    fig, (ax1, ax2, ax3, ax4, ax5, ax6, ax7, ax8, ax9, ax10, ax11, ax12) = plt.subplots(12, 1, sharex=True, figsize=(14, 32))
+    fig, (ax1, ax2, ax3, ax4, ax5, ax6, ax7, ax8, ax9, ax10, ax11, ax12) = plt.subplots(12, 1, sharex=True,
+                                                                                        figsize=(14, 32))
 
     # Проверка наличия столбца 'Date' в данных
     if 'Date' not in data:
@@ -20,8 +22,10 @@ def create_and_save_plot(data, ticker, period, filename=None):
             dates = data.index.to_numpy()
             ax1.plot(dates, data['Close'].values, label='Цена закрытия')
             ax1.plot(dates, data['Moving_Average'].values, label='Скользящее среднее', linestyle='--')
-            ax1.plot(dates, data['Bollinger_Upper'].values, label='Верхняя полоса Боллинджера', linestyle='--', color='red')
-            ax1.plot(dates, data['Bollinger_Lower'].values, label='Нижняя полоса Боллинджера', linestyle='--', color='green')
+            ax1.plot(dates, data['Bollinger_Upper'].values, label='Верхняя полоса Боллинджера', linestyle='--',
+                     color='red')
+            ax1.plot(dates, data['Bollinger_Lower'].values, label='Нижняя полоса Боллинджера', linestyle='--',
+                     color='green')
         else:
             print("Информация о дате отсутствует или не имеет распознаваемого формата.")
             return
@@ -32,7 +36,8 @@ def create_and_save_plot(data, ticker, period, filename=None):
         ax1.plot(data['Date'], data['Close'], label='Закрытие цены')
         ax1.plot(data['Date'], data['Moving_Average'], label='Скользящее среднее', linestyle='--')
         ax1.plot(data['Date'], data['Bollinger_Upper'], label='Верхняя полоса Боллинджера', linestyle='--', color='red')
-        ax1.plot(data['Date'], data['Bollinger_Lower'], label='Нижняя полоса Боллинджера', linestyle='--', color='green')
+        ax1.plot(data['Date'], data['Bollinger_Lower'], label='Нижняя полоса Боллинджера', linestyle='--',
+                 color='green')
 
     # Настройка заголовка и меток осей для первого графика
     ax1.set_title(f"{ticker} Цена акций с течением времени")
@@ -95,11 +100,17 @@ def create_and_save_plot(data, ticker, period, filename=None):
     # График Ichimoku Cloud
     ax10.plot(data.index, data['Ichimoku_Conversion'], label='Tenkan-sen (Тенкан-сен)', color='blue')
     ax10.plot(data.index, data['Ichimoku_Base'], label='Kijun-sen (Киджун-сен)', color='red')
-    ax10.plot(data.index, data['Ichimoku_Leading_Span_A'], label='Senkou Span A (Сенкой спан A)', color='green', linestyle='--')
-    ax10.plot(data.index, data['Ichimoku_Leading_Span_B'], label='Senkou Span B (Сенкой спан B)', color='purple', linestyle='--')
+    ax10.plot(data.index, data['Ichimoku_Leading_Span_A'], label='Senkou Span A (Сенкой спан A)', color='green',
+              linestyle='--')
+    ax10.plot(data.index, data['Ichimoku_Leading_Span_B'], label='Senkou Span B (Сенкой спан B)', color='purple',
+              linestyle='--')
     ax10.plot(data.index, data['Ichimoku_Lagging_Span'], label='Chikou Span (Чикоу спан)', color='orange')
-    ax10.fill_between(data.index, data['Ichimoku_Leading_Span_A'], data['Ichimoku_Leading_Span_B'], where=data['Ichimoku_Leading_Span_A'] >= data['Ichimoku_Leading_Span_B'], color='lightgreen', alpha=0.5)
-    ax10.fill_between(data.index, data['Ichimoku_Leading_Span_A'], data['Ichimoku_Leading_Span_B'], where=data['Ichimoku_Leading_Span_A'] < data['Ichimoku_Leading_Span_B'], color='lightcoral', alpha=0.5)
+    ax10.fill_between(data.index, data['Ichimoku_Leading_Span_A'], data['Ichimoku_Leading_Span_B'],
+                      where=data['Ichimoku_Leading_Span_A'] >= data['Ichimoku_Leading_Span_B'], color='lightgreen',
+                      alpha=0.5)
+    ax10.fill_between(data.index, data['Ichimoku_Leading_Span_A'], data['Ichimoku_Leading_Span_B'],
+                      where=data['Ichimoku_Leading_Span_A'] < data['Ichimoku_Leading_Span_B'], color='lightcoral',
+                      alpha=0.5)
     ax10.set_title('Ichimoku Cloud (Облако Ишимоку)')
     ax10.set_xlabel("Дата")
     ax10.set_ylabel("Цена")

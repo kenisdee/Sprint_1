@@ -1,6 +1,5 @@
 import data_download as dd
 import data_plotting as dplt
-import pandas as pd
 
 
 def notify_if_strong_fluctuations(data, threshold):
