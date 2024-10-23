@@ -77,11 +77,11 @@ def plot_parabolic_sar(ax, data):
 
 def plot_ichimoku_cloud(ax, data):
     """Построение графика Ichimoku Cloud."""
-    ax.plot(data.index, data['Ichimoku_Conversion'], label='Tenkan-sen (Тенкан-сен)', color='blue')
-    ax.plot(data.index, data['Ichimoku_Base'], label='Kijun-sen (Киджун-сен)', color='red')
-    ax.plot(data.index, data['Ichimoku_Leading_Span_A'], label='Senkou Span A (Сенкой спан A)', color='green', linestyle='--')
-    ax.plot(data.index, data['Ichimoku_Leading_Span_B'], label='Senkou Span B (Сенкой спан B)', color='purple', linestyle='--')
-    ax.plot(data.index, data['Ichimoku_Lagging_Span'], label='Chikou Span (Чикоу спан)', color='orange')
+    ax.plot(data.index, data['Ichimoku_Conversion'], label='Tenkan-sen (Быстрая линия, линия переворота)', color='blue')
+    ax.plot(data.index, data['Ichimoku_Base'], label='Kijun-sen (Медленная линия, линия стандарта)', color='red')
+    ax.plot(data.index, data['Ichimoku_Leading_Span_A'], label='Senkou Span A (Первая ведущая линия, SSA)', color='green', linestyle='--')
+    ax.plot(data.index, data['Ichimoku_Leading_Span_B'], label='Senkou Span B (Вторая ведущая линия, SSB)', color='purple', linestyle='--')
+    ax.plot(data.index, data['Ichimoku_Lagging_Span'], label='Chikou Span (Запаздывающая линия)', color='orange')
     ax.fill_between(data.index, data['Ichimoku_Leading_Span_A'], data['Ichimoku_Leading_Span_B'],
                     where=data['Ichimoku_Leading_Span_A'] >= data['Ichimoku_Leading_Span_B'], color='lightgreen', alpha=0.5)
     ax.fill_between(data.index, data['Ichimoku_Leading_Span_A'], data['Ichimoku_Leading_Span_B'],
