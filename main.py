@@ -50,14 +50,21 @@ def main():
 
     # Ввод тикера акции и периода
     ticker = input("Введите тикер акции (например, «AAPL» для Apple Inc): ")
-    period = input("Введите период для данных (например, '1mo' для одного месяца): ")
+    period = input("Введите период для данных (например, '1mo' для одного месяца) или 'custom' для указания дат: ")
+
+    if period.lower() == 'custom':
+        start_date = input("Введите дату начала в формате YYYY-MM-DD: ")
+        end_date = input("Введите дату окончания в формате YYYY-MM-DD: ")
+    else:
+        start_date = None
+        end_date = None
 
     # Ввод порога колебаний
     threshold = float(input("Введите порог колебаний в процентах (например, '10' для 10%): "))
 
     try:
         # Загрузка данных о акциях
-        stock_data = dd.fetch_stock_data(ticker, period)
+        stock_data = dd.fetch_stock_data(ticker, period, start_date, end_date)
 
         # Проверка на пустые данные
         if stock_data.empty:

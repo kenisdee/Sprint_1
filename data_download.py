@@ -3,19 +3,29 @@ import pandas as pd
 import yfinance as yf
 
 
-def fetch_stock_data(ticker, period='1mo'):
+def fetch_stock_data(ticker, period='1mo', start_date=None, end_date=None):
     """
     Загружает исторические данные о ценах акций с помощью библиотеки yfinance.
 
     :param ticker: Тикер акции (например, 'AAPL' для Apple Inc).
     :param period: Период данных (по умолчанию '1mo' для одного месяца).
+    :param start_date: Дата начала в формате YYYY-MM-DD (опционально).
+    :param end_date: Дата окончания в формате YYYY-MM-DD (опционально).
     :return: DataFrame с историческими данными о ценах акций.
     """
     # Создание объекта Ticker для указанного тикера
     stock = yf.Ticker(ticker)
 
-    # Загрузка исторических данных за указанный период
-    data = stock.history(period=period)
+    # Загрузка исторических данных за указанный период или диапазон дат
+    if start_date and end_date:
+        data = stock.history(start=start_date, end=end_date)
+    else:
+        data = stock.history(period=period)
+
+    # Проверка на наличие данных
+    if data.empty:
+        print("Данные не были загружены.")
+        return pd.DataFrame()
 
     # Добавление скользящего среднего
     data = add_moving_average(data)
