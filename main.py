@@ -31,7 +31,7 @@ def notify_if_strong_fluctuations(data, threshold):
 
 def export_data_to_csv(data, filename):
     """
-    Экспортирует данные об акциях в CSV файл в папку CSV.
+    Экспортирует данные об акциях в CSV файл в папку Data_CSV.
 
     :param data: DataFrame с данными о ценах акций.
     :param filename: Имя файла для сохранения данных.
