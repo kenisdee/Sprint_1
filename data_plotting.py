@@ -1,3 +1,4 @@
+import os
 import matplotlib.pyplot as plt
 import pandas as pd
 
@@ -129,6 +130,13 @@ def create_and_save_plot(data, ticker, period, filename=None):
     :param period: Период данных.
     :param filename: Имя файла для сохранения графика (по умолчанию генерируется автоматически).
     """
+    # Имя папки для сохранения графиков
+    chart_folder = 'Chart'
+
+    # Проверка существования папки и создание её, если она не существует
+    if not os.path.exists(chart_folder):
+        os.makedirs(chart_folder)
+
     # Создание фигуры для графика
     fig, axes = plt.subplots(12, 1, sharex=True, figsize=(14, 32))
 
@@ -187,7 +195,10 @@ def create_and_save_plot(data, ticker, period, filename=None):
     if filename is None:
         filename = f"{ticker}_{period}_stock_price_chart.png"
 
+    # Полный путь к файлу
+    full_path = os.path.join(chart_folder, filename)
+
     # Сохранение графика в файл
     plt.tight_layout()
-    plt.savefig(filename)
-    print(f"График сохранен как {filename}")
+    plt.savefig(full_path)
+    print(f"График сохранен как {full_path}")

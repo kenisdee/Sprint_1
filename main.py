@@ -1,3 +1,5 @@
+import os
+
 import data_download as dd
 import data_plotting as dplt
 
@@ -29,16 +31,26 @@ def notify_if_strong_fluctuations(data, threshold):
 
 def export_data_to_csv(data, filename):
     """
-    Экспортирует данные об акциях в CSV файл.
+    Экспортирует данные об акциях в CSV файл в папку CSV.
 
     :param data: DataFrame с данными о ценах акций.
     :param filename: Имя файла для сохранения данных.
     """
+    # Имя папки для сохранения CSV файлов
+    csv_folder = 'Data_CSV'
+
+    # Проверка существования папки и создание её, если она не существует
+    if not os.path.exists(csv_folder):
+        os.makedirs(csv_folder)
+
+    # Полный путь к файлу
+    full_path = os.path.join(csv_folder, filename)
+
     # Сохранение данных в CSV файл
-    data.to_csv(filename)
+    data.to_csv(full_path)
 
     # Вывод сообщения о том, что данные сохранены
-    print(f"Данные успешно экспортированы в файл {filename}")
+    print(f"Данные успешно экспортированы в файл {full_path}")
 
 
 def main():

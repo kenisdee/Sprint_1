@@ -14,8 +14,14 @@ from main import notify_if_strong_fluctuations, export_data_to_csv
 # Настройка логирования
 logging.basicConfig(level=logging.INFO, format='%(asctime)s - %(levelname)s - %(message)s')
 
+# Создание папки для логов, если она не существует
+log_folder = 'logs'
+if not os.path.exists(log_folder):
+    os.makedirs(log_folder)
+
 # Добавление обработчика для записи логов в файл
-file_handler = logging.FileHandler('test_log.log')
+log_filename = os.path.join(log_folder, 'test_log.log')
+file_handler = logging.FileHandler(log_filename)
 file_handler.setFormatter(logging.Formatter('%(asctime)s - %(levelname)s - %(message)s'))
 logging.getLogger().addHandler(file_handler)
 
@@ -93,10 +99,12 @@ class TestMain(unittest.TestCase):
         dplt.create_and_save_plot(stock_data, 'AAPL', '1mo')
         # Добавляем небольшую задержку, чтобы убедиться, что файл сохранен
         time.sleep(1)
-        # Проверка на существование файла графика
-        self.assertTrue(os.path.exists('AAPL_1mo_stock_price_chart.png'))
+        # Проверка на существование файла графика в папке Price_chart
+        chart_filename = 'AAPL_1mo_stock_price_chart.png'
+        full_path = os.path.join('Chart', chart_filename)
+        self.assertTrue(os.path.exists(full_path))
         # Очистка после теста
-        os.remove('AAPL_1mo_stock_price_chart.png')
+        os.remove(full_path)
         logging.info("График успешно создан и сохранен.")
 
     @patch('builtins.print')
@@ -138,13 +146,14 @@ class TestMain(unittest.TestCase):
         stock_data = dd.fetch_stock_data('AAPL', '1mo')
         csv_filename = 'test_export_data.csv'
         export_data_to_csv(stock_data, csv_filename)
-        # Проверка на существование файла
-        self.assertTrue(os.path.exists(csv_filename))
+        # Проверка на существование файла в папке CSV
+        full_path = os.path.join('Data_CSV', csv_filename)
+        self.assertTrue(os.path.exists(full_path))
         # Загрузка данных из CSV файла для проверки
-        loaded_data = pd.read_csv(csv_filename)
+        loaded_data = pd.read_csv(full_path)
         self.assertEqual(len(stock_data), len(loaded_data))
         # Очистка после теста
-        os.remove(csv_filename)
+        os.remove(full_path)
         logging.info("Данные успешно экспортированы и проверены.")
 
     def test_calculate_rsi(self):
