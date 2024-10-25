@@ -9,7 +9,7 @@ import pandas as pd
 
 import data_download as dd
 import data_plotting as dplt
-from main import notify_if_strong_fluctuations, export_data_to_csv
+from main import notify_if_strong_fluctuations, export_data_to_csv, create_styles_file
 
 # Настройка логирования
 logging.basicConfig(level=logging.INFO, format='%(asctime)s - %(levelname)s - %(message)s')
@@ -47,7 +47,8 @@ test_descriptions = {
     'test_calculate_mfi': 'Расчет MFI',
     'test_calculate_adl': 'Расчет ADL',
     'test_calculate_parabolic_sar': 'Расчет Parabolic SAR',
-    'test_calculate_ichimoku_cloud': 'Расчет Ichimoku Cloud'
+    'test_calculate_ichimoku_cloud': 'Расчет Ichimoku Cloud',
+    'test_create_styles_file': 'Создание файла стилей'
 }
 
 
@@ -263,6 +264,17 @@ class TestMain(unittest.TestCase):
         self.assertIn('Ichimoku_Lagging_Span', stock_data.columns)
         self.assertIsInstance(ichimoku_cloud, tuple)
         logging.info("Ichimoku Cloud успешно рассчитан.")
+
+    def test_create_styles_file(self):
+        """Тестирование создания файла стилей."""
+        create_styles_file()
+        styles_file = 'styles.txt'
+        self.assertTrue(os.path.exists(styles_file))
+        with open(styles_file, 'r') as file:
+            styles = file.readlines()
+        self.assertGreater(len(styles), 0)
+        os.remove(styles_file)
+        logging.info("Файл стилей успешно создан и проверен.")
 
 
 if __name__ == "__main__":
