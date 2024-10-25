@@ -5,6 +5,7 @@ import unittest
 from io import StringIO
 from unittest.mock import patch
 
+import matplotlib.pyplot as plt
 import pandas as pd
 
 import data_download as dd
@@ -275,6 +276,104 @@ class TestMain(unittest.TestCase):
         self.assertGreater(len(styles), 0)
         os.remove(styles_file)
         logging.info("Файл стилей успешно создан и проверен.")
+
+    # Тестирование построения графиков:
+
+    def test_plot_price_and_moving_average(self):
+        """Тестирование построения графика цены закрытия и скользящего среднего."""
+        stock_data = dd.fetch_stock_data('AAPL', '1mo')
+        fig, ax = plt.subplots()
+        dplt.plot_price_and_moving_average(ax, stock_data)
+        self.assertIsNotNone(ax.get_legend())
+        logging.info("График цены закрытия и скользящего среднего успешно построен.")
+
+    def test_plot_rsi(self):
+        """Тестирование построения графика RSI."""
+        stock_data = dd.fetch_stock_data('AAPL', '1mo')
+        fig, ax = plt.subplots()
+        dplt.plot_rsi(ax, stock_data)
+        self.assertIsNotNone(ax.get_legend())
+        logging.info("График RSI успешно построен.")
+
+    def test_plot_macd(self):
+        """Тестирование построения графика MACD."""
+        stock_data = dd.fetch_stock_data('AAPL', '1mo')
+        fig, ax = plt.subplots()
+        dplt.plot_macd(ax, stock_data)
+        self.assertIsNotNone(ax.get_legend())
+        logging.info("График MACD успешно построен.")
+
+    def test_plot_stochastic_oscillator(self):
+        """Тестирование построения графика Stochastic Oscillator."""
+        stock_data = dd.fetch_stock_data('AAPL', '1mo')
+        fig, ax = plt.subplots()
+        dplt.plot_stochastic_oscillator(ax, stock_data)
+        self.assertIsNotNone(ax.get_legend())
+        logging.info("График Stochastic Oscillator успешно построен.")
+
+    def test_plot_obv(self):
+        """Тестирование построения графика OBV."""
+        stock_data = dd.fetch_stock_data('AAPL', '1mo')
+        fig, ax = plt.subplots()
+        dplt.plot_obv(ax, stock_data)
+        self.assertIsNotNone(ax.get_legend())
+        logging.info("График OBV успешно построен.")
+
+    def test_plot_cci(self):
+        """Тестирование построения графика CCI."""
+        stock_data = dd.fetch_stock_data('AAPL', '1mo')
+        fig, ax = plt.subplots()
+        dplt.plot_cci(ax, stock_data)
+        self.assertIsNotNone(ax.get_legend())
+        logging.info("График CCI успешно построен.")
+
+    def test_plot_mfi(self):
+        """Тестирование построения графика MFI."""
+        stock_data = dd.fetch_stock_data('AAPL', '1mo')
+        fig, ax = plt.subplots()
+        dplt.plot_mfi(ax, stock_data)
+        self.assertIsNotNone(ax.get_legend())
+        logging.info("График MFI успешно построен.")
+
+    def test_plot_adl(self):
+        """Тестирование построения графика ADL."""
+        stock_data = dd.fetch_stock_data('AAPL', '1mo')
+        fig, ax = plt.subplots()
+        dplt.plot_adl(ax, stock_data)
+        self.assertIsNotNone(ax.get_legend())
+        logging.info("График ADL успешно построен.")
+
+    def test_plot_parabolic_sar(self):
+        """Тестирование построения графика Parabolic SAR."""
+        stock_data = dd.fetch_stock_data('AAPL', '1mo')
+        fig, ax = plt.subplots()
+        dplt.plot_parabolic_sar(ax, stock_data)
+        self.assertIsNotNone(ax.get_legend())
+        logging.info("График Parabolic SAR успешно построен.")
+
+    def test_plot_ichimoku_cloud(self):
+        """Тестирование построения графика Ichimoku Cloud."""
+        stock_data = dd.fetch_stock_data('AAPL', '1mo')
+        fig, ax = plt.subplots()
+        dplt.plot_ichimoku_cloud(ax, stock_data)
+        self.assertIsNotNone(ax.get_legend())
+        logging.info("График Ichimoku Cloud успешно построен.")
+
+    def test_plot_vwap(self):
+        """Тестирование построения графика VWAP."""
+        stock_data = dd.fetch_stock_data('AAPL', '1mo')
+        fig, ax = plt.subplots()
+        dplt.plot_vwap(ax, stock_data)
+        self.assertIsNotNone(ax.get_legend())
+        logging.info("График VWAP успешно построен.")
+
+    def test_plot_atr(self):
+        """Тестирование построения графика ATR."""
+        stock_data = dd.fetch_stock_data('AAPL', '1mo')
+        fig, ax = plt.subplots()
+        dplt.plot_atr(ax, stock_data)
+        self.assertIsNotNone(ax.get_legend())
+        logging.info("График ATR успешно построен.")
 
 
 if __name__ == "__main__":
