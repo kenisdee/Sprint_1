@@ -78,7 +78,10 @@ test_descriptions = {
     'test_calculate_parabolic_sar_empty_data': 'Расчет Parabolic SAR для пустых данных',
     'test_calculate_ichimoku_cloud_empty_data': 'Расчет Ichimoku Cloud для пустых данных',
     'test_create_and_save_plot_empty_data': 'Создание и сохранение графика для пустых данных',
-    'test_export_data_to_csv_empty_data': 'Экспорт пустых данных в CSV файл'
+    'test_export_data_to_csv_empty_data': 'Экспорт пустых данных в CSV файл',
+    'test_integration_fetch_data_and_create_plot': 'Интеграционный тест: загрузка данных и создание графика',
+    'test_integration_fetch_data_and_export_csv': 'Интеграционный тест: загрузка данных и экспорт в CSV',
+    'test_integration_fetch_data_and_calculate_indicators': 'Интеграционный тест: загрузка данных и расчет индикаторов'
 }
 
 
@@ -149,7 +152,7 @@ class TestMain(unittest.TestCase):
         dplt.create_and_save_plot(stock_data, 'AAPL', '1mo')
         # Добавляем небольшую задержку, чтобы убедиться, что файл сохранен
         time.sleep(1)
-        # Проверка на существование файла графика в папке Price_chart
+        # Проверка на существование файла графика в папке Сhart
         chart_filename = 'AAPL_1mo_stock_price_chart.png'
         full_path = os.path.join('Chart', chart_filename)
         self.assertTrue(os.path.exists(full_path))
@@ -203,7 +206,7 @@ class TestMain(unittest.TestCase):
         stock_data = dd.fetch_stock_data('AAPL', '1mo')
         csv_filename = 'test_export_data.csv'
         export_data_to_csv(stock_data, csv_filename)
-        # Проверка на существование файла в папке CSV
+        # Проверка на существование файла в папке Data_CSV
         full_path = os.path.join('Data_CSV', csv_filename)
         self.assertTrue(os.path.exists(full_path))
         # Загрузка данных из CSV файла для проверки
@@ -531,6 +534,50 @@ class TestMain(unittest.TestCase):
         dplt.plot_atr(ax, stock_data)
         self.assertIsNotNone(ax.get_legend())
         logging.info("График ATR успешно построен.")
+
+    def test_integration_fetch_data_and_create_plot(self):
+        """Интеграционный тест: загрузка данных и создание графика."""
+        stock_data = dd.fetch_stock_data('AAPL', '1mo')
+        self.assertFalse(stock_data.empty)
+        dplt.create_and_save_plot(stock_data, 'AAPL', '1mo')
+        # Добавляем небольшую задержку, чтобы убедиться, что файл сохранен
+        time.sleep(1)
+        # Проверка на существование файла графика в папке Chart
+        chart_filename = 'AAPL_1mo_stock_price_chart.png'
+        full_path = os.path.join('Chart', chart_filename)
+        self.assertTrue(os.path.exists(full_path))
+        # Очистка после теста
+        os.remove(full_path)
+        logging.info("Интеграционный тест: загрузка данных и создание графика успешно пройден.")
+
+    def test_integration_fetch_data_and_export_csv(self):
+        """Интеграционный тест: загрузка данных и экспорт в CSV."""
+        stock_data = dd.fetch_stock_data('AAPL', '1mo')
+        self.assertFalse(stock_data.empty)
+        csv_filename = 'test_integration_export_data.csv'
+        export_data_to_csv(stock_data, csv_filename)
+        # Проверка на существование файла в папке Data_CSV
+        full_path = os.path.join('Data_CSV', csv_filename)
+        self.assertTrue(os.path.exists(full_path))
+        # Загрузка данных из CSV файла для проверки
+        loaded_data = pd.read_csv(full_path)
+        self.assertEqual(len(stock_data), len(loaded_data))
+        # Очистка после теста
+        os.remove(full_path)
+        logging.info("Интеграционный тест: загрузка данных и экспорт в CSV успешно пройден.")
+
+    def test_integration_fetch_data_and_calculate_indicators(self):
+        """Интеграционный тест: загрузка данных и расчет индикаторов."""
+        stock_data = dd.fetch_stock_data('AAPL', '1mo')
+        self.assertFalse(stock_data.empty)
+        # Проверка наличия всех индикаторов
+        indicators = ['RSI', 'MACD', 'Signal', 'Bollinger_Upper', 'Bollinger_Middle', 'Bollinger_Lower',
+                      'Stochastic_K', 'Stochastic_D', 'VWAP', 'ATR', 'OBV', 'CCI', 'MFI', 'ADL', 'Parabolic_SAR',
+                      'Ichimoku_Conversion', 'Ichimoku_Base', 'Ichimoku_Leading_Span_A', 'Ichimoku_Leading_Span_B',
+                      'Ichimoku_Lagging_Span']
+        for indicator in indicators:
+            self.assertIn(indicator, stock_data.columns)
+        logging.info("Интеграционный тест: загрузка данных и расчет индикаторов успешно пройден.")
 
 if __name__ == "__main__":
     unittest.main()
