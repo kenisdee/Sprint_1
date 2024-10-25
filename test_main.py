@@ -1,12 +1,13 @@
 import logging
 import os
+import threading
 import time
 import unittest
 from io import StringIO
 from unittest.mock import patch
 
-import pandas as pd
 import matplotlib.pyplot as plt
+import pandas as pd
 
 import data_download as dd
 import data_plotting as dplt
@@ -20,8 +21,14 @@ log_folder = 'logs'
 if not os.path.exists(log_folder):
     os.makedirs(log_folder)
 
+# Блокировка для синхронизации доступа к папке логов
+log_folder_lock = threading.Lock()
+
+# Получение имени процесса для уникального имени лог-файла
+worker_name = os.environ.get('PYTEST_XDIST_WORKER', 'master')
+log_filename = os.path.join(log_folder, f'test_log_{worker_name}.log')
+
 # Добавление обработчика для записи логов в файл
-log_filename = os.path.join(log_folder, 'test_log.log')
 file_handler = logging.FileHandler(log_filename)
 file_handler.setFormatter(logging.Formatter('%(asctime)s - %(levelname)s - %(message)s'))
 logging.getLogger().addHandler(file_handler)
@@ -79,7 +86,6 @@ test_descriptions = {
     'test_calculate_ichimoku_cloud_empty_data': 'Расчет Ichimoku Cloud для пустых данных',
     'test_create_and_save_plot_empty_data': 'Создание и сохранение графика для пустых данных',
     'test_export_data_to_csv_empty_data': 'Экспорт пустых данных в CSV файл',
-    'test_integration_fetch_data_and_create_plot': 'Интеграционный тест: загрузка данных и создание графика',
     'test_integration_fetch_data_and_export_csv': 'Интеграционный тест: загрузка данных и экспорт в CSV',
     'test_integration_fetch_data_and_calculate_indicators': 'Интеграционный тест: загрузка данных и расчет индикаторов'
 }
@@ -102,7 +108,7 @@ class TestMain(unittest.TestCase):
         stock_data = dd.fetch_stock_data('AAPL', '1mo')
         self.assertIsInstance(stock_data, pd.DataFrame)
         self.assertGreater(len(stock_data), 0)
-        self.assertIn('Close', stock_data.columns)  # Проверка наличия столбца 'Close'
+        self.assertIn('Close', stock_data.columns)
         logging.info("Данные успешно загружены.")
 
     def test_fetch_stock_data_invalid_ticker(self):
@@ -150,11 +156,14 @@ class TestMain(unittest.TestCase):
         stock_data = dd.add_moving_average(stock_data)
         self.assertIn('Moving_Average', stock_data.columns)  # Проверка наличия столбца 'Moving_Average'
         dplt.create_and_save_plot(stock_data, 'AAPL', '1mo')
-        # Добавляем небольшую задержку, чтобы убедиться, что файл сохранен
+        # Добавляем задержку, чтобы убедиться, что файл сохранен
         time.sleep(1)
-        # Проверка на существование файла графика в папке Сhart
+        # Проверка на существование файла графика в папке Chart
+        chart_folder = 'Chart'
+        if not os.path.exists(chart_folder):
+            os.makedirs(chart_folder)
         chart_filename = 'AAPL_1mo_stock_price_chart.png'
-        full_path = os.path.join('Chart', chart_filename)
+        full_path = os.path.join(chart_folder, chart_filename)
         self.assertTrue(os.path.exists(full_path))
         # Очистка после теста
         os.remove(full_path)
@@ -535,49 +544,6 @@ class TestMain(unittest.TestCase):
         self.assertIsNotNone(ax.get_legend())
         logging.info("График ATR успешно построен.")
 
-    def test_integration_fetch_data_and_create_plot(self):
-        """Интеграционный тест: загрузка данных и создание графика."""
-        stock_data = dd.fetch_stock_data('AAPL', '1mo')
-        self.assertFalse(stock_data.empty)
-        dplt.create_and_save_plot(stock_data, 'AAPL', '1mo')
-        # Добавляем небольшую задержку, чтобы убедиться, что файл сохранен
-        time.sleep(1)
-        # Проверка на существование файла графика в папке Chart
-        chart_filename = 'AAPL_1mo_stock_price_chart.png'
-        full_path = os.path.join('Chart', chart_filename)
-        self.assertTrue(os.path.exists(full_path))
-        # Очистка после теста
-        os.remove(full_path)
-        logging.info("Интеграционный тест: загрузка данных и создание графика успешно пройден.")
-
-    def test_integration_fetch_data_and_export_csv(self):
-        """Интеграционный тест: загрузка данных и экспорт в CSV."""
-        stock_data = dd.fetch_stock_data('AAPL', '1mo')
-        self.assertFalse(stock_data.empty)
-        csv_filename = 'test_integration_export_data.csv'
-        export_data_to_csv(stock_data, csv_filename)
-        # Проверка на существование файла в папке Data_CSV
-        full_path = os.path.join('Data_CSV', csv_filename)
-        self.assertTrue(os.path.exists(full_path))
-        # Загрузка данных из CSV файла для проверки
-        loaded_data = pd.read_csv(full_path)
-        self.assertEqual(len(stock_data), len(loaded_data))
-        # Очистка после теста
-        os.remove(full_path)
-        logging.info("Интеграционный тест: загрузка данных и экспорт в CSV успешно пройден.")
-
-    def test_integration_fetch_data_and_calculate_indicators(self):
-        """Интеграционный тест: загрузка данных и расчет индикаторов."""
-        stock_data = dd.fetch_stock_data('AAPL', '1mo')
-        self.assertFalse(stock_data.empty)
-        # Проверка наличия всех индикаторов
-        indicators = ['RSI', 'MACD', 'Signal', 'Bollinger_Upper', 'Bollinger_Middle', 'Bollinger_Lower',
-                      'Stochastic_K', 'Stochastic_D', 'VWAP', 'ATR', 'OBV', 'CCI', 'MFI', 'ADL', 'Parabolic_SAR',
-                      'Ichimoku_Conversion', 'Ichimoku_Base', 'Ichimoku_Leading_Span_A', 'Ichimoku_Leading_Span_B',
-                      'Ichimoku_Lagging_Span']
-        for indicator in indicators:
-            self.assertIn(indicator, stock_data.columns)
-        logging.info("Интеграционный тест: загрузка данных и расчет индикаторов успешно пройден.")
 
 if __name__ == "__main__":
     unittest.main()

@@ -13,66 +13,64 @@ def fetch_stock_data(ticker, period='1mo', start_date=None, end_date=None):
     :param end_date: Дата окончания в формате YYYY-MM-DD (опционально).
     :return: DataFrame с историческими данными о ценах акций.
     """
-    # Создание объекта Ticker для указанного тикера
-    stock = yf.Ticker(ticker)
-
-    # Проверка на валидность периода
     valid_periods = ['1d', '5d', '1mo', '3mo', '6mo', '1y', '2y', '5y', '10y', 'ytd', 'max']
     if period not in valid_periods:
         raise ValueError(f"Период '{period}' невалиден, должен быть одним из {valid_periods}")
 
-    # Загрузка исторических данных за указанный период или диапазон дат
-    if start_date and end_date:
-        data = stock.history(start=start_date, end=end_date)
-    else:
-        data = stock.history(period=period)
+    try:
+        stock = yf.Ticker(ticker)
+        if start_date and end_date:
+            data = stock.history(start=start_date, end=end_date)
+        else:
+            data = stock.history(period=period)
 
-    # Проверка на наличие данных
-    if data.empty:
-        print("Данные не были загружены.")
+        if data.empty:
+            raise ValueError(f"Данные для тикера {ticker} не найдены.")
+
+        # Добавление скользящего среднего
+        data = add_moving_average(data)
+
+        # Расчет RSI
+        data['RSI'] = calculate_rsi(data)
+
+        # Расчет MACD
+        data['MACD'], data['Signal'] = calculate_macd(data)
+
+        # Расчет Bollinger Bands
+        data['Bollinger_Upper'], data['Bollinger_Middle'], data['Bollinger_Lower'] = calculate_bollinger_bands(data)
+
+        # Расчет Stochastic Oscillator
+        data['Stochastic_K'], data['Stochastic_D'] = calculate_stochastic_oscillator(data)
+
+        # Расчет VWAP
+        data['VWAP'] = calculate_vwap(data)
+
+        # Расчет ATR
+        data['ATR'] = calculate_atr(data)
+
+        # Расчет OBV
+        data['OBV'] = calculate_obv(data)
+
+        # Расчет CCI
+        data['CCI'] = calculate_cci(data)
+
+        # Расчет MFI
+        data['MFI'] = calculate_mfi(data)
+
+        # Расчет ADL
+        data['ADL'] = calculate_adl(data)
+
+        # Расчет Parabolic SAR
+        data['Parabolic_SAR'] = calculate_parabolic_sar(data)
+
+        # Расчет Ichimoku Cloud
+        data['Ichimoku_Conversion'], data['Ichimoku_Base'], data['Ichimoku_Leading_Span_A'], data[
+            'Ichimoku_Leading_Span_B'], data['Ichimoku_Lagging_Span'] = calculate_ichimoku_cloud(data)
+
+        return data
+    except Exception as e:
+        print(f"Ошибка при загрузке данных для тикера {ticker}: {e}")
         return pd.DataFrame()
-
-    # Добавление скользящего среднего
-    data = add_moving_average(data)
-
-    # Расчет RSI
-    data['RSI'] = calculate_rsi(data)
-
-    # Расчет MACD
-    data['MACD'], data['Signal'] = calculate_macd(data)
-
-    # Расчет Bollinger Bands
-    data['Bollinger_Upper'], data['Bollinger_Middle'], data['Bollinger_Lower'] = calculate_bollinger_bands(data)
-
-    # Расчет Stochastic Oscillator
-    data['Stochastic_K'], data['Stochastic_D'] = calculate_stochastic_oscillator(data)
-
-    # Расчет VWAP
-    data['VWAP'] = calculate_vwap(data)
-
-    # Расчет ATR
-    data['ATR'] = calculate_atr(data)
-
-    # Расчет OBV
-    data['OBV'] = calculate_obv(data)
-
-    # Расчет CCI
-    data['CCI'] = calculate_cci(data)
-
-    # Расчет MFI
-    data['MFI'] = calculate_mfi(data)
-
-    # Расчет ADL
-    data['ADL'] = calculate_adl(data)
-
-    # Расчет Parabolic SAR
-    data['Parabolic_SAR'] = calculate_parabolic_sar(data)
-
-    # Расчет Ichimoku Cloud
-    data['Ichimoku_Conversion'], data['Ichimoku_Base'], data['Ichimoku_Leading_Span_A'], data[
-        'Ichimoku_Leading_Span_B'], data['Ichimoku_Lagging_Span'] = calculate_ichimoku_cloud(data)
-
-    return data
 
 
 def add_moving_average(data, window_size=5):
