@@ -5,8 +5,8 @@ import unittest
 from io import StringIO
 from unittest.mock import patch
 
-import matplotlib.pyplot as plt
 import pandas as pd
+import matplotlib.pyplot as plt
 
 import data_download as dd
 import data_plotting as dplt
@@ -531,7 +531,6 @@ class TestMain(unittest.TestCase):
         dplt.plot_atr(ax, stock_data)
         self.assertIsNotNone(ax.get_legend())
         logging.info("График ATR успешно построен.")
-
 
 if __name__ == "__main__":
     unittest.main()
