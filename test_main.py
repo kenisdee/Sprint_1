@@ -49,7 +49,36 @@ test_descriptions = {
     'test_calculate_adl': 'Расчет ADL',
     'test_calculate_parabolic_sar': 'Расчет Parabolic SAR',
     'test_calculate_ichimoku_cloud': 'Расчет Ichimoku Cloud',
-    'test_create_styles_file': 'Создание файла стилей'
+    'test_create_styles_file': 'Создание файла стилей',
+    'test_plot_price_and_moving_average': 'Построение графика цены закрытия и скользящего среднего',
+    'test_plot_rsi': 'Построение графика RSI',
+    'test_plot_macd': 'Построение графика MACD',
+    'test_plot_stochastic_oscillator': 'Построение графика Stochastic Oscillator',
+    'test_plot_obv': 'Построение графика OBV',
+    'test_plot_cci': 'Построение графика CCI',
+    'test_plot_mfi': 'Построение графика MFI',
+    'test_plot_adl': 'Построение графика ADL',
+    'test_plot_parabolic_sar': 'Построение графика Parabolic SAR',
+    'test_plot_ichimoku_cloud': 'Построение графика Ichimoku Cloud',
+    'test_plot_vwap': 'Построение графика VWAP',
+    'test_plot_atr': 'Построение графика ATR',
+    'test_fetch_stock_data_invalid_ticker': 'Загрузка данных с невалидным тикером',
+    'test_fetch_stock_data_invalid_period': 'Загрузка данных с невалидным периодом',
+    'test_add_moving_average_empty_data': 'Добавление скользящего среднего к пустым данным',
+    'test_calculate_rsi_empty_data': 'Расчет RSI для пустых данных',
+    'test_calculate_macd_empty_data': 'Расчет MACD для пустых данных',
+    'test_calculate_bollinger_bands_empty_data': 'Расчет Bollinger Bands для пустых данных',
+    'test_calculate_stochastic_oscillator_empty_data': 'Расчет Stochastic Oscillator для пустых данных',
+    'test_calculate_vwap_empty_data': 'Расчет VWAP для пустых данных',
+    'test_calculate_atr_empty_data': 'Расчет ATR для пустых данных',
+    'test_calculate_obv_empty_data': 'Расчет OBV для пустых данных',
+    'test_calculate_cci_empty_data': 'Расчет CCI для пустых данных',
+    'test_calculate_mfi_empty_data': 'Расчет MFI для пустых данных',
+    'test_calculate_adl_empty_data': 'Расчет ADL для пустых данных',
+    'test_calculate_parabolic_sar_empty_data': 'Расчет Parabolic SAR для пустых данных',
+    'test_calculate_ichimoku_cloud_empty_data': 'Расчет Ichimoku Cloud для пустых данных',
+    'test_create_and_save_plot_empty_data': 'Создание и сохранение графика для пустых данных',
+    'test_export_data_to_csv_empty_data': 'Экспорт пустых данных в CSV файл'
 }
 
 
@@ -73,12 +102,31 @@ class TestMain(unittest.TestCase):
         self.assertIn('Close', stock_data.columns)  # Проверка наличия столбца 'Close'
         logging.info("Данные успешно загружены.")
 
+    def test_fetch_stock_data_invalid_ticker(self):
+        """Тестирование загрузки данных с невалидным тикером."""
+        stock_data = dd.fetch_stock_data('INVALID_TICKER', '1mo')
+        self.assertTrue(stock_data.empty)
+        logging.info("Данные с невалидным тикером не загружены.")
+
+    def test_fetch_stock_data_invalid_period(self):
+        """Тестирование загрузки данных с невалидным периодом."""
+        with self.assertRaises(ValueError):
+            dd.fetch_stock_data('AAPL', 'invalid_period')
+        logging.info("Загрузка данных с невалидным периодом вызвала ошибку.")
+
     def test_add_moving_average(self):
         """Тестирование добавления скользящего среднего."""
         stock_data = dd.fetch_stock_data('AAPL', '1mo')
         stock_data_with_ma = dd.add_moving_average(stock_data)
         self.assertIn('Moving_Average', stock_data_with_ma.columns)
         logging.info("Скользящее среднее успешно добавлено.")
+
+    def test_add_moving_average_empty_data(self):
+        """Тестирование добавления скользящего среднего к пустым данным."""
+        empty_data = pd.DataFrame()
+        result = dd.add_moving_average(empty_data)
+        self.assertTrue(result.empty)
+        logging.info("Скользящее среднее к пустым данным не добавлено.")
 
     @patch('sys.stdout', new_callable=StringIO)
     def test_calculate_and_display_average_price(self, mock_stdout):
@@ -108,6 +156,13 @@ class TestMain(unittest.TestCase):
         # Очистка после теста
         os.remove(full_path)
         logging.info("График успешно создан и сохранен.")
+
+    def test_create_and_save_plot_empty_data(self):
+        """Тестирование создания и сохранения графика для пустых данных."""
+        empty_data = pd.DataFrame()
+        with self.assertRaises(ValueError):
+            dplt.create_and_save_plot(empty_data, 'AAPL', '1mo')
+        logging.info("Создание графика для пустых данных вызвало ошибку.")
 
     @patch('builtins.print')
     def test_notify_strong_fluctuations(self, mock_print):
@@ -158,6 +213,21 @@ class TestMain(unittest.TestCase):
         os.remove(full_path)
         logging.info("Данные успешно экспортированы и проверены.")
 
+    def test_export_data_to_csv_empty_data(self):
+        """Тестирование экспорта пустых данных в CSV файл."""
+        empty_data = pd.DataFrame()
+        csv_filename = 'test_export_empty_data.csv'
+        export_data_to_csv(empty_data, csv_filename)
+        # Проверка на существование файла в папке CSV
+        full_path = os.path.join('Data_CSV', csv_filename)
+        self.assertTrue(os.path.exists(full_path))
+        # Загрузка данных из CSV файла для проверки
+        loaded_data = pd.read_csv(full_path)
+        self.assertTrue(loaded_data.empty)
+        # Очистка после теста
+        os.remove(full_path)
+        logging.info("Пустые данные успешно экспортированы.")
+
     def test_calculate_rsi(self):
         """Тестирование расчета RSI."""
         stock_data = dd.fetch_stock_data('AAPL', '1mo')
@@ -165,6 +235,13 @@ class TestMain(unittest.TestCase):
         self.assertIn('RSI', stock_data.columns)
         self.assertIsInstance(rsi, pd.Series)
         logging.info("RSI успешно рассчитан.")
+
+    def test_calculate_rsi_empty_data(self):
+        """Тестирование расчета RSI для пустых данных."""
+        empty_data = pd.DataFrame()
+        rsi = dd.calculate_rsi(empty_data)
+        self.assertTrue(rsi.empty)
+        logging.info("RSI для пустых данных не рассчитан.")
 
     def test_calculate_macd(self):
         """Тестирование расчета MACD."""
@@ -175,6 +252,14 @@ class TestMain(unittest.TestCase):
         self.assertIsInstance(macd, pd.Series)
         self.assertIsInstance(signal, pd.Series)
         logging.info("MACD успешно рассчитан.")
+
+    def test_calculate_macd_empty_data(self):
+        """Тестирование расчета MACD для пустых данных."""
+        empty_data = pd.DataFrame()
+        macd, signal = dd.calculate_macd(empty_data)
+        self.assertTrue(macd.empty)
+        self.assertTrue(signal.empty)
+        logging.info("MACD для пустых данных не рассчитан.")
 
     def test_calculate_bollinger_bands(self):
         """Тестирование расчета Bollinger Bands."""
@@ -188,6 +273,15 @@ class TestMain(unittest.TestCase):
         self.assertIsInstance(lower_band, pd.Series)
         logging.info("Bollinger Bands успешно рассчитаны.")
 
+    def test_calculate_bollinger_bands_empty_data(self):
+        """Тестирование расчета Bollinger Bands для пустых данных."""
+        empty_data = pd.DataFrame()
+        upper_band, middle_band, lower_band = dd.calculate_bollinger_bands(empty_data)
+        self.assertTrue(upper_band.empty)
+        self.assertTrue(middle_band.empty)
+        self.assertTrue(lower_band.empty)
+        logging.info("Bollinger Bands для пустых данных не рассчитаны.")
+
     def test_calculate_stochastic_oscillator(self):
         """Тестирование расчета Stochastic Oscillator."""
         stock_data = dd.fetch_stock_data('AAPL', '1mo')
@@ -198,6 +292,14 @@ class TestMain(unittest.TestCase):
         self.assertIsInstance(stochastic_d, pd.Series)
         logging.info("Stochastic Oscillator успешно рассчитан.")
 
+    def test_calculate_stochastic_oscillator_empty_data(self):
+        """Тестирование расчета Stochastic Oscillator для пустых данных."""
+        empty_data = pd.DataFrame()
+        stochastic_k, stochastic_d = dd.calculate_stochastic_oscillator(empty_data)
+        self.assertTrue(stochastic_k.empty)
+        self.assertTrue(stochastic_d.empty)
+        logging.info("Stochastic Oscillator для пустых данных не рассчитан.")
+
     def test_calculate_vwap(self):
         """Тестирование расчета VWAP."""
         stock_data = dd.fetch_stock_data('AAPL', '1mo')
@@ -205,6 +307,13 @@ class TestMain(unittest.TestCase):
         self.assertIn('VWAP', stock_data.columns)
         self.assertIsInstance(vwap, pd.Series)
         logging.info("VWAP успешно рассчитан.")
+
+    def test_calculate_vwap_empty_data(self):
+        """Тестирование расчета VWAP для пустых данных."""
+        empty_data = pd.DataFrame()
+        vwap = dd.calculate_vwap(empty_data)
+        self.assertTrue(vwap.empty)
+        logging.info("VWAP для пустых данных не рассчитан.")
 
     def test_calculate_atr(self):
         """Тестирование расчета ATR."""
@@ -214,6 +323,13 @@ class TestMain(unittest.TestCase):
         self.assertIsInstance(atr, pd.Series)
         logging.info("ATR успешно рассчитан.")
 
+    def test_calculate_atr_empty_data(self):
+        """Тестирование расчета ATR для пустых данных."""
+        empty_data = pd.DataFrame()
+        atr = dd.calculate_atr(empty_data)
+        self.assertTrue(atr.empty)
+        logging.info("ATR для пустых данных не рассчитан.")
+
     def test_calculate_obv(self):
         """Тестирование расчета OBV."""
         stock_data = dd.fetch_stock_data('AAPL', '1mo')
@@ -221,6 +337,13 @@ class TestMain(unittest.TestCase):
         self.assertIn('OBV', stock_data.columns)
         self.assertIsInstance(obv, pd.Series)
         logging.info("OBV успешно рассчитан.")
+
+    def test_calculate_obv_empty_data(self):
+        """Тестирование расчета OBV для пустых данных."""
+        empty_data = pd.DataFrame()
+        obv = dd.calculate_obv(empty_data)
+        self.assertTrue(obv.empty)
+        logging.info("OBV для пустых данных не рассчитан.")
 
     def test_calculate_cci(self):
         """Тестирование расчета CCI."""
@@ -230,6 +353,13 @@ class TestMain(unittest.TestCase):
         self.assertIsInstance(cci, pd.Series)
         logging.info("CCI успешно рассчитан.")
 
+    def test_calculate_cci_empty_data(self):
+        """Тестирование расчета CCI для пустых данных."""
+        empty_data = pd.DataFrame()
+        cci = dd.calculate_cci(empty_data)
+        self.assertTrue(cci.empty)
+        logging.info("CCI для пустых данных не рассчитан.")
+
     def test_calculate_mfi(self):
         """Тестирование расчета MFI."""
         stock_data = dd.fetch_stock_data('AAPL', '1mo')
@@ -237,6 +367,13 @@ class TestMain(unittest.TestCase):
         self.assertIn('MFI', stock_data.columns)
         self.assertIsInstance(mfi, pd.Series)
         logging.info("MFI успешно рассчитан.")
+
+    def test_calculate_mfi_empty_data(self):
+        """Тестирование расчета MFI для пустых данных."""
+        empty_data = pd.DataFrame()
+        mfi = dd.calculate_mfi(empty_data)
+        self.assertTrue(mfi.empty)
+        logging.info("MFI для пустых данных не рассчитан.")
 
     def test_calculate_adl(self):
         """Тестирование расчета ADL."""
@@ -246,6 +383,13 @@ class TestMain(unittest.TestCase):
         self.assertIsInstance(adl, pd.Series)
         logging.info("ADL успешно рассчитан.")
 
+    def test_calculate_adl_empty_data(self):
+        """Тестирование расчета ADL для пустых данных."""
+        empty_data = pd.DataFrame()
+        adl = dd.calculate_adl(empty_data)
+        self.assertTrue(adl.empty)
+        logging.info("ADL для пустых данных не рассчитан.")
+
     def test_calculate_parabolic_sar(self):
         """Тестирование расчета Parabolic SAR."""
         stock_data = dd.fetch_stock_data('AAPL', '1mo')
@@ -253,6 +397,13 @@ class TestMain(unittest.TestCase):
         self.assertIn('Parabolic_SAR', stock_data.columns)
         self.assertIsInstance(parabolic_sar, pd.Series)
         logging.info("Parabolic SAR успешно рассчитан.")
+
+    def test_calculate_parabolic_sar_empty_data(self):
+        """Тестирование расчета Parabolic SAR для пустых данных."""
+        empty_data = pd.DataFrame()
+        parabolic_sar = dd.calculate_parabolic_sar(empty_data)
+        self.assertTrue(parabolic_sar.empty)
+        logging.info("Parabolic SAR для пустых данных не рассчитан.")
 
     def test_calculate_ichimoku_cloud(self):
         """Тестирование расчета Ichimoku Cloud."""
@@ -266,6 +417,14 @@ class TestMain(unittest.TestCase):
         self.assertIsInstance(ichimoku_cloud, tuple)
         logging.info("Ichimoku Cloud успешно рассчитан.")
 
+    def test_calculate_ichimoku_cloud_empty_data(self):
+        """Тестирование расчета Ichimoku Cloud для пустых данных."""
+        empty_data = pd.DataFrame()
+        ichimoku_cloud = dd.calculate_ichimoku_cloud(empty_data)
+        self.assertIsInstance(ichimoku_cloud, tuple)
+        self.assertTrue(all(series.empty for series in ichimoku_cloud))
+        logging.info("Ichimoku Cloud для пустых данных не рассчитан.")
+
     def test_create_styles_file(self):
         """Тестирование создания файла стилей."""
         create_styles_file()
@@ -276,8 +435,6 @@ class TestMain(unittest.TestCase):
         self.assertGreater(len(styles), 0)
         os.remove(styles_file)
         logging.info("Файл стилей успешно создан и проверен.")
-
-    # Тестирование построения графиков:
 
     def test_plot_price_and_moving_average(self):
         """Тестирование построения графика цены закрытия и скользящего среднего."""

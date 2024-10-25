@@ -132,6 +132,10 @@ def create_and_save_plot(data, ticker, period, style='default', filename=None):
     :param style: Стиль графика (по умолчанию 'default').
     :param filename: Имя файла для сохранения графика (по умолчанию генерируется автоматически).
     """
+    # Проверка на пустые данные
+    if data.empty:
+        raise ValueError("Данные пусты.")
+
     # Имя папки для сохранения графиков
     chart_folder = 'Chart'
 

@@ -16,6 +16,11 @@ def fetch_stock_data(ticker, period='1mo', start_date=None, end_date=None):
     # Создание объекта Ticker для указанного тикера
     stock = yf.Ticker(ticker)
 
+    # Проверка на валидность периода
+    valid_periods = ['1d', '5d', '1mo', '3mo', '6mo', '1y', '2y', '5y', '10y', 'ytd', 'max']
+    if period not in valid_periods:
+        raise ValueError(f"Период '{period}' невалиден, должен быть одним из {valid_periods}")
+
     # Загрузка исторических данных за указанный период или диапазон дат
     if start_date and end_date:
         data = stock.history(start=start_date, end=end_date)
