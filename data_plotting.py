@@ -1,4 +1,5 @@
 import os
+
 import matplotlib.pyplot as plt
 import pandas as pd
 
@@ -121,13 +122,14 @@ def plot_atr(ax, data):
     ax.legend()
 
 
-def create_and_save_plot(data, ticker, period, filename=None):
+def create_and_save_plot(data, ticker, period, style='default', filename=None):
     """
     Создает и сохраняет график цены акций с течением времени.
 
     :param data: DataFrame с данными о ценах закрытия и скользящем среднем.
     :param ticker: Тикер акции.
     :param period: Период данных.
+    :param style: Стиль графика (по умолчанию 'default').
     :param filename: Имя файла для сохранения графика (по умолчанию генерируется автоматически).
     """
     # Имя папки для сохранения графиков
@@ -136,6 +138,13 @@ def create_and_save_plot(data, ticker, period, filename=None):
     # Проверка существования папки и создание её, если она не существует
     if not os.path.exists(chart_folder):
         os.makedirs(chart_folder)
+
+    # Применение выбранного стиля
+    if style in plt.style.available:
+        plt.style.use(style)
+    else:
+        print(f"Стиль '{style}' не найден. Используется стиль по умолчанию.")
+        plt.style.use('default')
 
     # Создание фигуры для графика
     fig, axes = plt.subplots(12, 1, sharex=True, figsize=(14, 32))
