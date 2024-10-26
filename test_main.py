@@ -87,7 +87,11 @@ test_descriptions = {
     'test_create_and_save_plot_empty_data': 'Создание и сохранение графика для пустых данных',
     'test_export_data_to_csv_empty_data': 'Экспорт пустых данных в CSV файл',
     'test_integration_fetch_data_and_export_csv': 'Интеграционный тест: загрузка данных и экспорт в CSV',
-    'test_integration_fetch_data_and_calculate_indicators': 'Интеграционный тест: загрузка данных и расчет индикаторов'
+    'test_integration_fetch_data_and_calculate_indicators': 'Интеграционный тест: загрузка данных и расчет индикаторов',
+    'test_calculate_mean_closing_price': 'Расчет среднего значения цены закрытия',
+    'test_calculate_variance_closing_price': 'Расчет дисперсии цены закрытия',
+    'test_calculate_coefficient_of_variation': 'Расчет коэффициента вариации',
+    'test_calculate_correlation_between_closing_prices': 'Расчет корреляции между ценами закрытия'
 }
 
 
@@ -139,16 +143,34 @@ class TestMain(unittest.TestCase):
 
     @patch('sys.stdout', new_callable=StringIO)
     def test_calculate_and_display_average_price(self, mock_stdout):
-        """Тестирование вычисления и вывода средней цены закрытия."""
+        """Тестирование вычисления и вывода средней цены закрытия, дисперсии и коэффициента вариации."""
         stock_data = dd.fetch_stock_data('AAPL', '1mo')
         dd.calculate_and_display_average_price(stock_data)
+
         # Проверка вывода
-        expected_output = "Средняя цена закрытия акций: "
-        self.assertIn(expected_output, mock_stdout.getvalue())
+        expected_output = [
+            "Средняя цена закрытия акций: ",
+            "Дисперсия цены закрытия: ",
+            "Коэффициент вариации: "
+        ]
+        output = mock_stdout.getvalue()
+        for line in expected_output:
+            self.assertIn(line, output)
+
         # Проверка корректности вычисления средней цены закрытия
-        average_price = stock_data['Close'].mean()
-        self.assertAlmostEqual(float(mock_stdout.getvalue().split()[-1]), average_price, places=2)
-        logging.info("Средняя цена закрытия успешно вычислена и отображена.")
+        mean_closing_price = stock_data['Close'].mean()
+        variance_closing_price = stock_data['Close'].var()
+        std_deviation = stock_data['Close'].std()
+        coefficient_of_variation = (std_deviation / mean_closing_price) * 100
+
+        self.assertAlmostEqual(float(output.split("Средняя цена закрытия акций: ")[1].split()[0]), mean_closing_price,
+                               places=2)
+        self.assertAlmostEqual(float(output.split("Дисперсия цены закрытия: ")[1].split()[0]), variance_closing_price,
+                               places=2)
+        self.assertAlmostEqual(float(output.split("Коэффициент вариации: ")[1].split("%")[0]), coefficient_of_variation,
+                               places=2)
+
+        logging.info("Средняя цена закрытия, дисперсия и коэффициент вариации успешно вычислены и отображены.")
 
     def test_create_and_save_plot(self):
         """Тестирование создания и сохранения графика."""
@@ -544,28 +566,37 @@ class TestMain(unittest.TestCase):
         self.assertIsNotNone(ax.get_legend())
         logging.info("График ATR успешно построен.")
 
-    def test_calculate_std_deviation(self):
-        """Тестирование расчета стандартного отклонения."""
+    def test_calculate_mean_closing_price(self):
+        """Тестирование расчета среднего значения цены закрытия."""
         stock_data = dd.fetch_stock_data('AAPL', '1mo')
-        std_deviation = dd.calculate_std_deviation(stock_data)
-        self.assertIn('Std_Deviation', stock_data.columns)
-        self.assertIsInstance(std_deviation, pd.Series)
-        logging.info("Стандартное отклонение успешно рассчитано.")
+        mean_closing_price = dd.calculate_mean_closing_price(stock_data)
+        self.assertIn('Mean_Closing_Price', stock_data.columns)
+        self.assertIsInstance(mean_closing_price, float)  # Изменено на float
+        logging.info("Среднее значение цены закрытия успешно рассчитано.")
 
-    def test_calculate_std_deviation_empty_data(self):
-        """Тестирование расчета стандартного отклонения для пустых данных."""
-        empty_data = pd.DataFrame()
-        std_deviation = dd.calculate_std_deviation(empty_data)
-        self.assertTrue(std_deviation.empty)
-        logging.info("Стандартное отклонение для пустых данных не рассчитано.")
-
-    def test_plot_std_deviation(self):
-        """Тестирование построения графика стандартного отклонения."""
+    def test_calculate_variance_closing_price(self):
+        """Тестирование расчета дисперсии цены закрытия."""
         stock_data = dd.fetch_stock_data('AAPL', '1mo')
-        fig, ax = plt.subplots()
-        dplt.plot_std_deviation(ax, stock_data)
-        self.assertIsNotNone(ax.get_legend())
-        logging.info("График стандартного отклонения успешно построен.")
+        variance_closing_price = dd.calculate_variance_closing_price(stock_data)
+        self.assertIn('Variance_Closing_Price', stock_data.columns)
+        self.assertIsInstance(variance_closing_price, float)  # Изменено на float
+        logging.info("Дисперсия цены закрытия успешно рассчитана.")
+
+    def test_calculate_coefficient_of_variation(self):
+        """Тестирование расчета коэффициента вариации."""
+        stock_data = dd.fetch_stock_data('AAPL', '1mo')
+        coefficient_of_variation = dd.calculate_coefficient_of_variation(stock_data)
+        self.assertIn('Coefficient_of_Variation', stock_data.columns)
+        self.assertIsInstance(coefficient_of_variation, float)  # Изменено на float
+        logging.info("Коэффициент вариации успешно рассчитан.")
+
+    def test_calculate_correlation_between_closing_prices(self):
+        """Тестирование расчета корреляции между ценами закрытия."""
+        stock_data1 = dd.fetch_stock_data('AAPL', '1mo')
+        stock_data2 = dd.fetch_stock_data('GOOGL', '1mo')
+        correlation = dd.calculate_correlation_between_closing_prices(stock_data1, stock_data2)
+        self.assertIsInstance(correlation, float)
+        logging.info("Корреляция между ценами закрытия успешно рассчитана.")
 
 
 if __name__ == "__main__":
