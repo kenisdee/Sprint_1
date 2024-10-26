@@ -1,4 +1,5 @@
 import os
+
 import matplotlib.pyplot as plt
 import pandas as pd
 
@@ -133,7 +134,8 @@ def plot_mean_closing_price(ax, data):
     mean_closing_price = data['Mean_Closing_Price'].iloc[0]
     ax.axhline(mean_closing_price, label='Среднее значение цены закрытия', color='blue', linestyle='--')
     x_mid = (ax.get_xlim()[0] + ax.get_xlim()[1]) / 2
-    ax.text(x_mid, mean_closing_price, f'{mean_closing_price:.2f}', verticalalignment='bottom', horizontalalignment='center')
+    ax.text(x_mid, mean_closing_price, f'{mean_closing_price:.2f}', verticalalignment='bottom',
+            horizontalalignment='center')
     ax.set_ylabel("Цена")
     ax.legend()
 
@@ -143,7 +145,8 @@ def plot_variance_closing_price(ax, data):
     variance_closing_price = data['Variance_Closing_Price'].iloc[0]
     ax.axhline(variance_closing_price, label='Дисперсия цены закрытия', color='green', linestyle='--')
     x_mid = (ax.get_xlim()[0] + ax.get_xlim()[1]) / 2
-    ax.text(x_mid, variance_closing_price, f'{variance_closing_price:.2f}', verticalalignment='bottom', horizontalalignment='center')
+    ax.text(x_mid, variance_closing_price, f'{variance_closing_price:.2f}', verticalalignment='bottom',
+            horizontalalignment='center')
     ax.set_ylabel("Дисперсия")
     ax.legend()
 
@@ -153,7 +156,8 @@ def plot_coefficient_of_variation(ax, data):
     coefficient_of_variation = data['Coefficient_of_Variation'].iloc[0]
     ax.axhline(coefficient_of_variation, label='Коэффициент вариации', color='red', linestyle='--')
     x_mid = (ax.get_xlim()[0] + ax.get_xlim()[1]) / 2
-    ax.text(x_mid, coefficient_of_variation, f'{coefficient_of_variation:.2f}%', verticalalignment='bottom', horizontalalignment='center')
+    ax.text(x_mid, coefficient_of_variation, f'{coefficient_of_variation:.2f}%', verticalalignment='bottom',
+            horizontalalignment='center')
     ax.set_ylabel("Коэффициент вариации (%)")
     ax.legend()
 
