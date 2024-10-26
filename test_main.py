@@ -544,6 +544,29 @@ class TestMain(unittest.TestCase):
         self.assertIsNotNone(ax.get_legend())
         logging.info("График ATR успешно построен.")
 
+    def test_calculate_std_deviation(self):
+        """Тестирование расчета стандартного отклонения."""
+        stock_data = dd.fetch_stock_data('AAPL', '1mo')
+        std_deviation = dd.calculate_std_deviation(stock_data)
+        self.assertIn('Std_Deviation', stock_data.columns)
+        self.assertIsInstance(std_deviation, pd.Series)
+        logging.info("Стандартное отклонение успешно рассчитано.")
+
+    def test_calculate_std_deviation_empty_data(self):
+        """Тестирование расчета стандартного отклонения для пустых данных."""
+        empty_data = pd.DataFrame()
+        std_deviation = dd.calculate_std_deviation(empty_data)
+        self.assertTrue(std_deviation.empty)
+        logging.info("Стандартное отклонение для пустых данных не рассчитано.")
+
+    def test_plot_std_deviation(self):
+        """Тестирование построения графика стандартного отклонения."""
+        stock_data = dd.fetch_stock_data('AAPL', '1mo')
+        fig, ax = plt.subplots()
+        dplt.plot_std_deviation(ax, stock_data)
+        self.assertIsNotNone(ax.get_legend())
+        logging.info("График стандартного отклонения успешно построен.")
+
 
 if __name__ == "__main__":
     unittest.main()
