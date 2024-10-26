@@ -571,7 +571,7 @@ class TestMain(unittest.TestCase):
         stock_data = dd.fetch_stock_data('AAPL', '1mo')
         mean_closing_price = dd.calculate_mean_closing_price(stock_data)
         self.assertIn('Mean_Closing_Price', stock_data.columns)
-        self.assertIsInstance(mean_closing_price, float)  # Изменено на float
+        self.assertIsInstance(mean_closing_price, float)
         logging.info("Среднее значение цены закрытия успешно рассчитано.")
 
     def test_calculate_variance_closing_price(self):
@@ -579,7 +579,7 @@ class TestMain(unittest.TestCase):
         stock_data = dd.fetch_stock_data('AAPL', '1mo')
         variance_closing_price = dd.calculate_variance_closing_price(stock_data)
         self.assertIn('Variance_Closing_Price', stock_data.columns)
-        self.assertIsInstance(variance_closing_price, float)  # Изменено на float
+        self.assertIsInstance(variance_closing_price, float)
         logging.info("Дисперсия цены закрытия успешно рассчитана.")
 
     def test_calculate_coefficient_of_variation(self):
@@ -587,7 +587,7 @@ class TestMain(unittest.TestCase):
         stock_data = dd.fetch_stock_data('AAPL', '1mo')
         coefficient_of_variation = dd.calculate_coefficient_of_variation(stock_data)
         self.assertIn('Coefficient_of_Variation', stock_data.columns)
-        self.assertIsInstance(coefficient_of_variation, float)  # Изменено на float
+        self.assertIsInstance(coefficient_of_variation, float)
         logging.info("Коэффициент вариации успешно рассчитан.")
 
     def test_calculate_correlation_between_closing_prices(self):
