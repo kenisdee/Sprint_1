@@ -1,7 +1,10 @@
 import os
+
 import matplotlib.pyplot as plt
+
 import data_download as dd
 import data_plotting as dplt
+
 
 def create_styles_file():
     """
@@ -12,6 +15,7 @@ def create_styles_file():
         with open(styles_file, 'w') as file:
             for style in plt.style.available:
                 file.write(f"{style}\n")
+
 
 def notify_if_strong_fluctuations(data, threshold):
     """
@@ -37,6 +41,7 @@ def notify_if_strong_fluctuations(data, threshold):
     else:
         print(f"Колебания цены акций в пределах нормы: {fluctuation:.2f}% (порог: {threshold}%)")
 
+
 def export_data_to_csv(data, filename):
     """
     Экспортирует данные об акциях в CSV файл в папку Data_CSV.
@@ -59,6 +64,7 @@ def export_data_to_csv(data, filename):
 
     # Вывод сообщения о том, что данные сохранены
     print(f"Данные успешно экспортированы в файл {full_path}")
+
 
 def main():
     print("Добро пожаловать в инструмент получения и построения графиков биржевых данных.")
@@ -119,6 +125,7 @@ def main():
         print(f"Ошибка ввода данных: {ve}")
     except Exception as e:
         print(f"Произошла ошибка: {e}")
+
 
 if __name__ == "__main__":
     main()
