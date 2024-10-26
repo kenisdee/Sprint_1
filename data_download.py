@@ -70,6 +70,18 @@ def fetch_stock_data(ticker, period='1mo', start_date=None, end_date=None):
         # Расчет стандартного отклонения
         data['Std_Deviation'] = calculate_std_deviation(data)
 
+        # Расчет стандартного отклонения
+        data['Std_Deviation'] = calculate_std_deviation(data)
+
+        # Расчет среднего значения цены закрытия
+        data['Mean_Closing_Price'] = calculate_mean_closing_price(data)
+
+        # Расчет дисперсии цены закрытия
+        data['Variance_Closing_Price'] = calculate_variance_closing_price(data)
+
+        # Расчет коэффициента вариации
+        data['Coefficient_of_Variation'] = calculate_coefficient_of_variation(data)
+
         return data
     except Exception as e:
         print(f"Ошибка при загрузке данных для тикера {ticker}: {e}")
@@ -362,7 +374,7 @@ def calculate_ichimoku_cloud(data, conversion_period=9, base_period=26, leading_
 
 def calculate_and_display_average_price(data):
     """
-    Вычисляет и выводит среднюю цену закрытия акций.
+    Вычисляет и выводит среднюю цену закрытия акций, дисперсию цены закрытия и коэффициент вариации.
 
     :param data: DataFrame с данными о ценах акций.
     """
@@ -374,8 +386,14 @@ def calculate_and_display_average_price(data):
         print("Столбец 'Close' пуст.")
         return
 
-    average_price = data['Close'].mean()
-    print(f"Средняя цена закрытия акций: {average_price:.2f}")
+    mean_closing_price = data['Close'].mean()
+    variance_closing_price = data['Close'].var()
+    std_deviation = data['Close'].std()
+    coefficient_of_variation = (std_deviation / mean_closing_price) * 100
+
+    print(f"Средняя цена закрытия акций: {mean_closing_price:.2f}")
+    print(f"Дисперсия цены закрытия: {variance_closing_price:.2f}")
+    print(f"Коэффициент вариации: {coefficient_of_variation:.2f}%")
 
 
 def export_data_to_csv(data, filename):
@@ -407,3 +425,66 @@ def calculate_std_deviation(data, window=20):
 
     std_deviation = data['Close'].rolling(window=window).std()
     return std_deviation
+
+
+def calculate_mean_closing_price(data):
+    """
+    Рассчитывает среднее значение цены закрытия.
+
+    :param data: DataFrame с данными о ценах акций.
+    :return: Series с рассчитанным средним значением.
+    """
+    if 'Close' not in data.columns:
+        print("Столбец 'Close' отсутствует в данных.")
+        return pd.Series()
+
+    mean_closing_price = data['Close'].mean()
+    return mean_closing_price
+
+
+def calculate_variance_closing_price(data):
+    """
+    Рассчитывает дисперсию цены закрытия.
+
+    :param data: DataFrame с данными о ценах акций.
+    :return: Series с рассчитанной дисперсией.
+    """
+    if 'Close' not in data.columns:
+        print("Столбец 'Close' отсутствует в данных.")
+        return pd.Series()
+
+    variance_closing_price = data['Close'].var()
+    return variance_closing_price
+
+
+def calculate_coefficient_of_variation(data):
+    """
+    Рассчитывает коэффициент вариации цены закрытия.
+
+    :param data: DataFrame с данными о ценах акций.
+    :return: Series с рассчитанным коэффициентом вариации.
+    """
+    if 'Close' not in data.columns:
+        print("Столбец 'Close' отсутствует в данных.")
+        return pd.Series()
+
+    mean_closing_price = data['Close'].mean()
+    std_deviation = data['Close'].std()
+    coefficient_of_variation = (std_deviation / mean_closing_price) * 100
+    return coefficient_of_variation
+
+
+def calculate_correlation_between_closing_prices(data1, data2):
+    """
+    Рассчитывает корреляцию между ценами закрытия двух разных акций.
+
+    :param data1: DataFrame с данными о ценах первой акции.
+    :param data2: DataFrame с данными о ценах второй акции.
+    :return: Коэффициент корреляции.
+    """
+    if 'Close' not in data1.columns or 'Close' not in data2.columns:
+        print("Столбец 'Close' отсутствует в данных.")
+        return None
+
+    correlation = data1['Close'].corr(data2['Close'])
+    return correlation

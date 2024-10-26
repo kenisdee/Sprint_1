@@ -128,6 +128,36 @@ def plot_std_deviation(ax, data):
     ax.legend()
 
 
+def plot_mean_closing_price(ax, data):
+    """Построение графика среднего значения цены закрытия."""
+    mean_closing_price = data['Mean_Closing_Price'].iloc[0]
+    ax.axhline(mean_closing_price, label='Среднее значение цены закрытия', color='blue', linestyle='--')
+    x_mid = (ax.get_xlim()[0] + ax.get_xlim()[1]) / 2
+    ax.text(x_mid, mean_closing_price, f'{mean_closing_price:.2f}', verticalalignment='bottom', horizontalalignment='center')
+    ax.set_ylabel("Цена")
+    ax.legend()
+
+
+def plot_variance_closing_price(ax, data):
+    """Построение графика дисперсии цены закрытия."""
+    variance_closing_price = data['Variance_Closing_Price'].iloc[0]
+    ax.axhline(variance_closing_price, label='Дисперсия цены закрытия', color='green', linestyle='--')
+    x_mid = (ax.get_xlim()[0] + ax.get_xlim()[1]) / 2
+    ax.text(x_mid, variance_closing_price, f'{variance_closing_price:.2f}', verticalalignment='bottom', horizontalalignment='center')
+    ax.set_ylabel("Дисперсия")
+    ax.legend()
+
+
+def plot_coefficient_of_variation(ax, data):
+    """Построение графика коэффициента вариации."""
+    coefficient_of_variation = data['Coefficient_of_Variation'].iloc[0]
+    ax.axhline(coefficient_of_variation, label='Коэффициент вариации', color='red', linestyle='--')
+    x_mid = (ax.get_xlim()[0] + ax.get_xlim()[1]) / 2
+    ax.text(x_mid, coefficient_of_variation, f'{coefficient_of_variation:.2f}%', verticalalignment='bottom', horizontalalignment='center')
+    ax.set_ylabel("Коэффициент вариации (%)")
+    ax.legend()
+
+
 def create_and_save_plot(data, ticker, period, style='default', filename=None):
     """
     Создает и сохраняет график цены акций с течением времени.
@@ -157,13 +187,14 @@ def create_and_save_plot(data, ticker, period, style='default', filename=None):
         plt.style.use('default')
 
     # Создание фигуры для графика
-    fig, axes = plt.subplots(13, 1, sharex=True, figsize=(14, 36))
+    fig, axes = plt.subplots(16, 1, sharex=True, figsize=(14, 48))
 
     # Проверка наличия необходимых столбцов
     required_columns = ['Close', 'Moving_Average', 'Bollinger_Upper', 'Bollinger_Lower', 'RSI', 'MACD', 'Signal',
                         'Stochastic_K', 'Stochastic_D', 'OBV', 'CCI', 'MFI', 'ADL', 'Parabolic_SAR',
                         'Ichimoku_Conversion', 'Ichimoku_Base', 'Ichimoku_Leading_Span_A', 'Ichimoku_Leading_Span_B',
-                        'Ichimoku_Lagging_Span', 'VWAP', 'ATR', 'Std_Deviation']
+                        'Ichimoku_Lagging_Span', 'VWAP', 'ATR', 'Std_Deviation', 'Mean_Closing_Price',
+                        'Variance_Closing_Price', 'Coefficient_of_Variation']
     for column in required_columns:
         if column not in data.columns:
             print(f"Столбец '{column}' отсутствует в данных.")
@@ -210,10 +241,21 @@ def create_and_save_plot(data, ticker, period, style='default', filename=None):
     axes[11].set_title('ATR (Средний истинный диапазон)')
     axes[11].set_xlabel("Дата")
 
-    # Добавляем график стандартного отклонения
     plot_std_deviation(axes[12], data)
     axes[12].set_title('Стандартное отклонение цены закрытия')
     axes[12].set_xlabel("Дата")
+
+    plot_mean_closing_price(axes[13], data)
+    axes[13].set_title('Среднее значение цены закрытия')
+    axes[13].set_xlabel("Дата")
+
+    plot_variance_closing_price(axes[14], data)
+    axes[14].set_title('Дисперсия цены закрытия')
+    axes[14].set_xlabel("Дата")
+
+    plot_coefficient_of_variation(axes[15], data)
+    axes[15].set_title('Коэффициент вариации')
+    axes[15].set_xlabel("Дата")
 
     # Генерация имени файла, если оно не было предоставлено
     if filename is None:
