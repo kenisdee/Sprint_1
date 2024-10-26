@@ -158,14 +158,14 @@ def plot_coefficient_of_variation(ax, data):
     ax.legend()
 
 
-def create_and_save_plot(data, ticker, period, style='default', filename=None):
+def create_and_save_plot(data, ticker, period, style='classic', filename=None):
     """
     Создает и сохраняет график цены акций с течением времени.
 
     :param data: DataFrame с данными о ценах закрытия и скользящем среднем.
     :param ticker: Тикер акции.
     :param period: Период данных.
-    :param style: Стиль графика (по умолчанию 'default').
+    :param style: Стиль графика (по умолчанию 'classic').
     :param filename: Имя файла для сохранения графика (по умолчанию генерируется автоматически).
     """
     # Проверка на пустые данные
@@ -184,7 +184,7 @@ def create_and_save_plot(data, ticker, period, style='default', filename=None):
         plt.style.use(style)
     else:
         print(f"Стиль '{style}' не найден. Используется стиль по умолчанию.")
-        plt.style.use('default')
+        plt.style.use('classic')
 
     # Создание фигуры для графика
     fig, axes = plt.subplots(16, 1, sharex=True, figsize=(14, 48))

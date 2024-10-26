@@ -88,7 +88,7 @@ def main():
     print("Доступные стили графиков можно посмотреть в файле 'styles.txt'.")
 
     # Ввод стиля графика
-    style = input("Введите стиль графика (например, 'ggplot', 'seaborn-darkgrid', 'default'): ")
+    style = input("Введите стиль графика (например, 'ggplot', 'seaborn-darkgrid', 'classic'): ")
 
     try:
         # Загрузка данных о акциях
