@@ -67,6 +67,9 @@ def fetch_stock_data(ticker, period='1mo', start_date=None, end_date=None):
         data['Ichimoku_Conversion'], data['Ichimoku_Base'], data['Ichimoku_Leading_Span_A'], data[
             'Ichimoku_Leading_Span_B'], data['Ichimoku_Lagging_Span'] = calculate_ichimoku_cloud(data)
 
+        # Расчет стандартного отклонения
+        data['Std_Deviation'] = calculate_std_deviation(data)
+
         return data
     except Exception as e:
         print(f"Ошибка при загрузке данных для тикера {ticker}: {e}")
@@ -388,3 +391,19 @@ def export_data_to_csv(data, filename):
 
     data.to_csv(filename)
     print(f"Данные успешно экспортированы в файл {filename}")
+
+
+def calculate_std_deviation(data, window=20):
+    """
+    Рассчитывает стандартное отклонение цены закрытия.
+
+    :param data: DataFrame с данными о ценах акций.
+    :param window: Размер окна для расчета стандартного отклонения (по умолчанию 20).
+    :return: Series с рассчитанным стандартным отклонением.
+    """
+    if 'Close' not in data.columns:
+        print("Столбец 'Close' отсутствует в данных.")
+        return pd.Series()
+
+    std_deviation = data['Close'].rolling(window=window).std()
+    return std_deviation

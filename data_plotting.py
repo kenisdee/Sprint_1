@@ -1,5 +1,4 @@
 import os
-
 import matplotlib.pyplot as plt
 import pandas as pd
 
@@ -122,6 +121,13 @@ def plot_atr(ax, data):
     ax.legend()
 
 
+def plot_std_deviation(ax, data):
+    """Построение графика стандартного отклонения цены закрытия."""
+    ax.plot(data.index, data['Std_Deviation'], label='Стандартное отклонение', color='purple')
+    ax.set_ylabel("Стандартное отклонение")
+    ax.legend()
+
+
 def create_and_save_plot(data, ticker, period, style='default', filename=None):
     """
     Создает и сохраняет график цены акций с течением времени.
@@ -151,13 +157,13 @@ def create_and_save_plot(data, ticker, period, style='default', filename=None):
         plt.style.use('default')
 
     # Создание фигуры для графика
-    fig, axes = plt.subplots(12, 1, sharex=True, figsize=(14, 32))
+    fig, axes = plt.subplots(13, 1, sharex=True, figsize=(14, 36))
 
     # Проверка наличия необходимых столбцов
     required_columns = ['Close', 'Moving_Average', 'Bollinger_Upper', 'Bollinger_Lower', 'RSI', 'MACD', 'Signal',
                         'Stochastic_K', 'Stochastic_D', 'OBV', 'CCI', 'MFI', 'ADL', 'Parabolic_SAR',
                         'Ichimoku_Conversion', 'Ichimoku_Base', 'Ichimoku_Leading_Span_A', 'Ichimoku_Leading_Span_B',
-                        'Ichimoku_Lagging_Span', 'VWAP', 'ATR']
+                        'Ichimoku_Lagging_Span', 'VWAP', 'ATR', 'Std_Deviation']
     for column in required_columns:
         if column not in data.columns:
             print(f"Столбец '{column}' отсутствует в данных.")
@@ -203,6 +209,11 @@ def create_and_save_plot(data, ticker, period, style='default', filename=None):
     plot_atr(axes[11], data)
     axes[11].set_title('ATR (Средний истинный диапазон)')
     axes[11].set_xlabel("Дата")
+
+    # Добавляем график стандартного отклонения
+    plot_std_deviation(axes[12], data)
+    axes[12].set_title('Стандартное отклонение цены закрытия')
+    axes[12].set_xlabel("Дата")
 
     # Генерация имени файла, если оно не было предоставлено
     if filename is None:
