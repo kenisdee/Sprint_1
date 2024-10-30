@@ -1,7 +1,5 @@
 import os
 
-import matplotlib.pyplot as plt
-
 import data_download as dd
 import data_plotting as dplt
 
@@ -90,12 +88,6 @@ def main():
     # Ввод порога колебаний
     threshold = float(input("Введите порог колебаний в процентах (например, '10' для 10%): "))
 
-    # Уведомление о доступных стилях
-    print("Доступные стили графиков можно посмотреть в файле 'styles.txt'.")
-
-    # Ввод стиля графика
-    style = input("Введите стиль графика (например, 'ggplot', 'seaborn-darkgrid', 'classic'): ")
-
     try:
         # Загрузка данных о акциях
         stock_data = dd.fetch_stock_data(ticker, period, start_date, end_date)
@@ -114,8 +106,8 @@ def main():
         # Уведомление о сильных колебаниях цены акций
         notify_if_strong_fluctuations(stock_data, threshold)
 
-        # Построение графика данных
-        dplt.create_and_save_plot(stock_data, ticker, period, style)
+        # Построение графика данных с использованием Plotly
+        dplt.create_and_save_plot(stock_data, ticker, period)
 
         # Экспорт данных в CSV файл
         csv_filename = f"{ticker}_{period}_stock_data.csv"

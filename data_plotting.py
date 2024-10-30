@@ -1,177 +1,201 @@
 import os
 
-import matplotlib.pyplot as plt
-import pandas as pd
+import plotly.graph_objs as go
+import plotly.subplots as sp
 
 
-def plot_price_and_moving_average(ax, data):
-    """Построение графика цены закрытия и скользящего среднего."""
-    if 'Date' not in data:
-        if pd.api.types.is_datetime64_any_dtype(data.index):
-            dates = data.index.to_numpy()
-            ax.plot(dates, data['Close'].values, label='Цена закрытия')
-            ax.plot(dates, data['Moving_Average'].values, label='Скользящее среднее', linestyle='--')
-            ax.plot(dates, data['Bollinger_Upper'].values, label='Верхняя полоса Боллинджера', linestyle='--',
-                    color='red')
-            ax.plot(dates, data['Bollinger_Lower'].values, label='Нижняя полоса Боллинджера', linestyle='--',
-                    color='green')
-        else:
-            print("Информация о дате отсутствует или не имеет распознаваемого формата.")
-            return
-    else:
-        if not pd.api.types.is_datetime64_any_dtype(data['Date']):
-            data['Date'] = pd.to_datetime(data['Date'])
-        ax.plot(data['Date'], data['Close'], label='Закрытие цены')
-        ax.plot(data['Date'], data['Moving_Average'], label='Скользящее среднее', linestyle='--')
-        ax.plot(data['Date'], data['Bollinger_Upper'], label='Верхняя полоса Боллинджера', linestyle='--', color='red')
-        ax.plot(data['Date'], data['Bollinger_Lower'], label='Нижняя полоса Боллинджера', linestyle='--', color='green')
-    ax.set_ylabel("Цена")
-    ax.legend()
+def plot_price_and_moving_average(data):
+    """Построение интерактивного графика цены закрытия и скользящего среднего."""
+    fig = go.Figure()
+
+    fig.add_trace(go.Scatter(x=data.index, y=data['Close'], mode='lines', name='Цена закрытия'))
+    fig.add_trace(go.Scatter(x=data.index, y=data['Moving_Average'], mode='lines', name='Скользящее среднее',
+                             line=dict(dash='dash')))
+    fig.add_trace(go.Scatter(x=data.index, y=data['Bollinger_Upper'], mode='lines', name='Верхняя полоса Боллинджера',
+                             line=dict(dash='dash', color='red')))
+    fig.add_trace(go.Scatter(x=data.index, y=data['Bollinger_Lower'], mode='lines', name='Нижняя полоса Боллинджера',
+                             line=dict(dash='dash', color='green')))
+
+    fig.update_layout(title='Цена закрытия и скользящее среднее', xaxis_title='Дата', yaxis_title='Цена')
+    return fig
 
 
-def plot_rsi(ax, data):
-    """Построение графика RSI."""
-    ax.plot(data.index, data['RSI'], label='RSI (Индекс относительной силы)', color='orange')
-    ax.axhline(30, linestyle='--', alpha=0.5, color='red')
-    ax.axhline(70, linestyle='--', alpha=0.5, color='red')
-    ax.set_ylabel("RSI")
-    ax.legend()
+def plot_rsi(data):
+    """Построение интерактивного графика RSI."""
+    fig = go.Figure()
+
+    fig.add_trace(go.Scatter(x=data.index, y=data['RSI'], mode='lines', name='RSI'))
+    fig.add_shape(type="line", x0=data.index[0], x1=data.index[-1], y0=30, y1=30, line=dict(color="red", dash="dash"))
+    fig.add_shape(type="line", x0=data.index[0], x1=data.index[-1], y0=70, y1=70, line=dict(color="red", dash="dash"))
+
+    fig.update_layout(title='RSI (Индекс относительной силы)', xaxis_title='Дата', yaxis_title='RSI')
+    return fig
 
 
-def plot_macd(ax, data):
-    """Построение графика MACD."""
-    ax.plot(data.index, data['MACD'], label='MACD (Схождение — расхождение скользящих средних)', color='blue')
-    ax.plot(data.index, data['Signal'], label='Сигнал', color='red')
-    ax.set_ylabel("MACD")
-    ax.legend()
+def plot_macd(data):
+    """Построение интерактивного графика MACD."""
+    fig = go.Figure()
+
+    fig.add_trace(go.Scatter(x=data.index, y=data['MACD'], mode='lines', name='MACD'))
+    fig.add_trace(go.Scatter(x=data.index, y=data['Signal'], mode='lines', name='Сигнал', line=dict(color='red')))
+
+    fig.update_layout(title='MACD (Схождение — расхождение скользящих средних)', xaxis_title='Дата', yaxis_title='MACD')
+    return fig
 
 
-def plot_stochastic_oscillator(ax, data):
-    """Построение графика Stochastic Oscillator."""
-    ax.plot(data.index, data['Stochastic_K'], label='Stochastic %K (Быстрый стохастик)', color='purple')
-    ax.plot(data.index, data['Stochastic_D'], label='Stochastic %D (Медленный стохастик)', color='brown')
-    ax.set_ylabel("Stochastic")
-    ax.legend()
+def plot_stochastic_oscillator(data):
+    """Построение интерактивного графика Stochastic Oscillator."""
+    fig = go.Figure()
+
+    fig.add_trace(go.Scatter(x=data.index, y=data['Stochastic_K'], mode='lines', name='Stochastic %K'))
+    fig.add_trace(
+        go.Scatter(x=data.index, y=data['Stochastic_D'], mode='lines', name='Stochastic %D', line=dict(color='red')))
+
+    fig.update_layout(title='Stochastic Oscillator (Стохастический Осциллятор)', xaxis_title='Дата',
+                      yaxis_title='Stochastic')
+    return fig
 
 
-def plot_obv(ax, data):
-    """Построение графика OBV."""
-    ax.plot(data.index, data['OBV'], label='OBV (Индикатор балансового объема)', color='black')
-    ax.set_ylabel("OBV")
-    ax.legend()
+def plot_obv(data):
+    """Построение интерактивного графика OBV."""
+    fig = go.Figure()
+
+    fig.add_trace(go.Scatter(x=data.index, y=data['OBV'], mode='lines', name='OBV'))
+
+    fig.update_layout(title='Индикатор балансового объема (OBV)', xaxis_title='Дата', yaxis_title='OBV')
+    return fig
 
 
-def plot_cci(ax, data):
-    """Построение графика CCI."""
-    ax.plot(data.index, data['CCI'], label='CCI (Индекс товарного канала)', color='cyan')
-    ax.set_ylabel("CCI")
-    ax.legend()
+def plot_cci(data):
+    """Построение интерактивного графика CCI."""
+    fig = go.Figure()
+
+    fig.add_trace(go.Scatter(x=data.index, y=data['CCI'], mode='lines', name='CCI'))
+
+    fig.update_layout(title='Индекс товарного канала (CCI)', xaxis_title='Дата', yaxis_title='CCI')
+    return fig
 
 
-def plot_mfi(ax, data):
-    """Построение графика MFI."""
-    ax.plot(data.index, data['MFI'], label='MFI (Индекс денежного потока)', color='magenta')
-    ax.set_ylabel("MFI")
-    ax.legend()
+def plot_mfi(data):
+    """Построение интерактивного графика MFI."""
+    fig = go.Figure()
+
+    fig.add_trace(go.Scatter(x=data.index, y=data['MFI'], mode='lines', name='MFI'))
+
+    fig.update_layout(title='Индекс денежного потока (MFI)', xaxis_title='Дата', yaxis_title='MFI')
+    return fig
 
 
-def plot_adl(ax, data):
-    """Построение графика ADL."""
-    ax.plot(data.index, data['ADL'], label='ADL (Линия накопления/распределения)', color='yellow')
-    ax.set_ylabel("ADL")
-    ax.legend()
+def plot_adl(data):
+    """Построение интерактивного графика ADL."""
+    fig = go.Figure()
+
+    fig.add_trace(go.Scatter(x=data.index, y=data['ADL'], mode='lines', name='ADL'))
+
+    fig.update_layout(title='Линия накопления/распределения (ADL)', xaxis_title='Дата', yaxis_title='ADL')
+    return fig
 
 
-def plot_parabolic_sar(ax, data):
-    """Построение графика Parabolic SAR."""
-    ax.plot(data.index, data['Parabolic_SAR'], label='Parabolic SAR (Параболическая система SAR)', color='green')
-    ax.set_ylabel("Parabolic SAR")
-    ax.legend()
+def plot_parabolic_sar(data):
+    """Построение интерактивного графика Parabolic SAR."""
+    fig = go.Figure()
+
+    fig.add_trace(go.Scatter(x=data.index, y=data['Parabolic_SAR'], mode='lines', name='Parabolic SAR'))
+
+    fig.update_layout(title='Параболическая система SAR', xaxis_title='Дата', yaxis_title='Parabolic SAR')
+    return fig
 
 
-def plot_ichimoku_cloud(ax, data):
-    """Построение графика Ichimoku Cloud."""
-    ax.plot(data.index, data['Ichimoku_Conversion'], label='Tenkan-sen (Быстрая линия, линия переворота)', color='blue')
-    ax.plot(data.index, data['Ichimoku_Base'], label='Kijun-sen (Медленная линия, линия стандарта)', color='red')
-    ax.plot(data.index, data['Ichimoku_Leading_Span_A'], label='Senkou Span A (Первая ведущая линия, SSA)',
-            color='green', linestyle='--')
-    ax.plot(data.index, data['Ichimoku_Leading_Span_B'], label='Senkou Span B (Вторая ведущая линия, SSB)',
-            color='purple', linestyle='--')
-    ax.plot(data.index, data['Ichimoku_Lagging_Span'], label='Chikou Span (Запаздывающая линия)', color='orange')
-    ax.fill_between(data.index, data['Ichimoku_Leading_Span_A'], data['Ichimoku_Leading_Span_B'],
-                    where=data['Ichimoku_Leading_Span_A'] >= data['Ichimoku_Leading_Span_B'], color='lightgreen',
-                    alpha=0.5)
-    ax.fill_between(data.index, data['Ichimoku_Leading_Span_A'], data['Ichimoku_Leading_Span_B'],
-                    where=data['Ichimoku_Leading_Span_A'] < data['Ichimoku_Leading_Span_B'], color='lightcoral',
-                    alpha=0.5)
-    ax.set_ylabel("Цена")
-    ax.legend()
+def plot_ichimoku_cloud(data):
+    """Построение интерактивного графика Ichimoku Cloud."""
+    fig = go.Figure()
+
+    fig.add_trace(go.Scatter(x=data.index, y=data['Ichimoku_Conversion'], mode='lines',
+                             name='Tenkan-sen (Быстрая линия, линия переворота)'))
+    fig.add_trace(go.Scatter(x=data.index, y=data['Ichimoku_Base'], mode='lines',
+                             name='Kijun-sen (Медленная линия, линия стандарта)'))
+    fig.add_trace(go.Scatter(x=data.index, y=data['Ichimoku_Leading_Span_A'], mode='lines',
+                             name='Senkou Span A (Первая ведущая линия, SSA)', line=dict(dash='dash')))
+    fig.add_trace(go.Scatter(x=data.index, y=data['Ichimoku_Leading_Span_B'], mode='lines',
+                             name='Senkou Span B (Вторая ведущая линия, SSB)', line=dict(dash='dash')))
+    fig.add_trace(go.Scatter(x=data.index, y=data['Ichimoku_Lagging_Span'], mode='lines',
+                             name='Chikou Span (Запаздывающая линия)'))
+
+    fig.update_layout(title='Ichimoku Cloud (Облако Ишимоку)', xaxis_title='Дата', yaxis_title='Цена')
+    return fig
 
 
-def plot_vwap(ax, data):
-    """Построение графика VWAP."""
-    ax.plot(data.index, data['VWAP'], label='VWAP (Средневзвешенная по объему цена)', color='cyan')
-    ax.set_ylabel("VWAP")
-    ax.legend()
+def plot_vwap(data):
+    """Построение интерактивного графика VWAP."""
+    fig = go.Figure()
+
+    fig.add_trace(go.Scatter(x=data.index, y=data['VWAP'], mode='lines', name='VWAP'))
+
+    fig.update_layout(title='VWAP (Средневзвешенная по объему цена)', xaxis_title='Дата', yaxis_title='VWAP')
+    return fig
 
 
-def plot_atr(ax, data):
-    """Построение графика ATR."""
-    ax.plot(data.index, data['ATR'], label='ATR (Средний истинный диапазон)', color='magenta')
-    ax.set_ylabel("ATR")
-    ax.legend()
+def plot_atr(data):
+    """Построение интерактивного графика ATR."""
+    fig = go.Figure()
+
+    fig.add_trace(go.Scatter(x=data.index, y=data['ATR'], mode='lines', name='ATR'))
+
+    fig.update_layout(title='ATR (Средний истинный диапазон)', xaxis_title='Дата', yaxis_title='ATR')
+    return fig
 
 
-def plot_std_deviation(ax, data):
-    """Построение графика стандартного отклонения цены закрытия."""
-    ax.plot(data.index, data['Std_Deviation'], label='Стандартное отклонение', color='purple')
-    ax.set_ylabel("Стандартное отклонение")
-    ax.legend()
+def plot_std_deviation(data):
+    """Построение интерактивного графика стандартного отклонения цены закрытия."""
+    fig = go.Figure()
+
+    fig.add_trace(go.Scatter(x=data.index, y=data['Std_Deviation'], mode='lines', name='Стандартное отклонение'))
+
+    fig.update_layout(title='Стандартное отклонение цены закрытия', xaxis_title='Дата',
+                      yaxis_title='Стандартное отклонение')
+    return fig
 
 
-def plot_mean_closing_price(ax, data):
-    """Построение графика среднего значения цены закрытия."""
+def plot_mean_closing_price(data):
+    """Построение интерактивного графика среднего значения цены закрытия."""
+    fig = go.Figure()
+
     mean_closing_price = data['Mean_Closing_Price'].iloc[0]
-    ax.axhline(mean_closing_price, label='Среднее значение цены закрытия', color='blue', linestyle='--')
-    x_mid = (ax.get_xlim()[0] + ax.get_xlim()[1]) / 2
-    ax.text(x_mid, mean_closing_price, f'{mean_closing_price:.2f}', verticalalignment='bottom',
-            horizontalalignment='center')
-    ax.set_ylabel("Цена")
-    ax.legend()
+    fig.add_trace(go.Scatter(x=data.index, y=[mean_closing_price] * len(data), mode='lines',
+                             name='Среднее значение цены закрытия', line=dict(dash='dash')))
+
+    fig.update_layout(title='Среднее значение цены закрытия', xaxis_title='Дата', yaxis_title='Цена')
+    return fig
 
 
-def plot_variance_closing_price(ax, data):
-    """Построение графика дисперсии цены закрытия."""
+def plot_variance_closing_price(data):
+    """Построение интерактивного графика дисперсии цены закрытия."""
+    fig = go.Figure()
+
     variance_closing_price = data['Variance_Closing_Price'].iloc[0]
-    ax.axhline(variance_closing_price, label='Дисперсия цены закрытия', color='green', linestyle='--')
-    x_mid = (ax.get_xlim()[0] + ax.get_xlim()[1]) / 2
-    ax.text(x_mid, variance_closing_price, f'{variance_closing_price:.2f}', verticalalignment='bottom',
-            horizontalalignment='center')
-    ax.set_ylabel("Дисперсия")
-    ax.legend()
+    fig.add_trace(
+        go.Scatter(x=data.index, y=[variance_closing_price] * len(data), mode='lines', name='Дисперсия цены закрытия',
+                   line=dict(dash='dash')))
+
+    fig.update_layout(title='Дисперсия цены закрытия', xaxis_title='Дата', yaxis_title='Дисперсия')
+    return fig
 
 
-def plot_coefficient_of_variation(ax, data):
-    """Построение графика коэффициента вариации."""
+def plot_coefficient_of_variation(data):
+    """Построение интерактивного графика коэффициента вариации."""
+    fig = go.Figure()
+
     coefficient_of_variation = data['Coefficient_of_Variation'].iloc[0]
-    ax.axhline(coefficient_of_variation, label='Коэффициент вариации', color='red', linestyle='--')
-    x_mid = (ax.get_xlim()[0] + ax.get_xlim()[1]) / 2
-    ax.text(x_mid, coefficient_of_variation, f'{coefficient_of_variation:.2f}%', verticalalignment='bottom',
-            horizontalalignment='center')
-    ax.set_ylabel("Коэффициент вариации (%)")
-    ax.legend()
+    fig.add_trace(
+        go.Scatter(x=data.index, y=[coefficient_of_variation] * len(data), mode='lines', name='Коэффициент вариации',
+                   line=dict(dash='dash')))
+
+    fig.update_layout(title='Коэффициент вариации', xaxis_title='Дата', yaxis_title='Коэффициент вариации (%)')
+    return fig
 
 
-def create_and_save_plot(data, ticker, period, style='classic', filename=None):
-    """
-    Создает и сохраняет график цены акций с течением времени.
-
-    :param data: DataFrame с данными о ценах закрытия и скользящем среднем.
-    :param ticker: Тикер акции.
-    :param period: Период данных.
-    :param style: Стиль графика (по умолчанию 'classic').
-    :param filename: Имя файла для сохранения графика (по умолчанию генерируется автоматически).
-    """
+def create_and_save_plot(data, ticker, period, filename=None):
+    """Создание и сохранение интерактивного графика."""
     # Проверка на пустые данные
     if data.empty:
         raise ValueError("Данные пусты.")
@@ -183,92 +207,61 @@ def create_and_save_plot(data, ticker, period, style='classic', filename=None):
     if not os.path.exists(chart_folder):
         os.makedirs(chart_folder)
 
-    # Применение выбранного стиля
-    if style in plt.style.available:
-        plt.style.use(style)
-    else:
-        print(f"Стиль '{style}' не найден. Используется стиль по умолчанию.")
-        plt.style.use('classic')
-
-    # Создание фигуры для графика
-    fig, axes = plt.subplots(16, 1, sharex=True, figsize=(14, 48))
-
-    # Проверка наличия необходимых столбцов
-    required_columns = ['Close', 'Moving_Average', 'Bollinger_Upper', 'Bollinger_Lower', 'RSI', 'MACD', 'Signal',
-                        'Stochastic_K', 'Stochastic_D', 'OBV', 'CCI', 'MFI', 'ADL', 'Parabolic_SAR',
-                        'Ichimoku_Conversion', 'Ichimoku_Base', 'Ichimoku_Leading_Span_A', 'Ichimoku_Leading_Span_B',
-                        'Ichimoku_Lagging_Span', 'VWAP', 'ATR', 'Std_Deviation', 'Mean_Closing_Price',
-                        'Variance_Closing_Price', 'Coefficient_of_Variation']
-    for column in required_columns:
-        if column not in data.columns:
-            print(f"Столбец '{column}' отсутствует в данных.")
-            return
-
-    # Построение графиков
-    plot_price_and_moving_average(axes[0], data)
-    axes[0].set_title(f"{ticker} Цена акций с течением времени")
-
-    plot_rsi(axes[1], data)
-    axes[1].set_title('RSI (Индекс относительной силы)')
-
-    plot_macd(axes[2], data)
-    axes[2].set_title('MACD (Схождение — расхождение скользящих средних)')
-
-    plot_stochastic_oscillator(axes[3], data)
-    axes[3].set_title('Stochastic Oscillator (Стохастический Осциллятор)')
-
-    plot_obv(axes[4], data)
-    axes[4].set_title('Индикатор балансового объема (OBV)')
-
-    plot_cci(axes[5], data)
-    axes[5].set_title('Индекс товарного канала (CCI)')
-
-    plot_mfi(axes[6], data)
-    axes[6].set_title('Индекс денежного потока (MFI)')
-
-    plot_adl(axes[7], data)
-    axes[7].set_title('Линия накопления/распределения (ADL)')
-
-    plot_parabolic_sar(axes[8], data)
-    axes[8].set_title('Параболическая система SAR')
-    axes[8].set_xlabel("Дата")
-
-    plot_ichimoku_cloud(axes[9], data)
-    axes[9].set_title('Ichimoku Cloud (Облако Ишимоку)')
-    axes[9].set_xlabel("Дата")
-
-    plot_vwap(axes[10], data)
-    axes[10].set_title('VWAP (Средневзвешенная по объему цена)')
-    axes[10].set_xlabel("Дата")
-
-    plot_atr(axes[11], data)
-    axes[11].set_title('ATR (Средний истинный диапазон)')
-    axes[11].set_xlabel("Дата")
-
-    plot_std_deviation(axes[12], data)
-    axes[12].set_title('Стандартное отклонение цены закрытия')
-    axes[12].set_xlabel("Дата")
-
-    plot_mean_closing_price(axes[13], data)
-    axes[13].set_title('Среднее значение цены закрытия')
-    axes[13].set_xlabel("Дата")
-
-    plot_variance_closing_price(axes[14], data)
-    axes[14].set_title('Дисперсия цены закрытия')
-    axes[14].set_xlabel("Дата")
-
-    plot_coefficient_of_variation(axes[15], data)
-    axes[15].set_title('Коэффициент вариации')
-    axes[15].set_xlabel("Дата")
-
     # Генерация имени файла, если оно не было предоставлено
     if filename is None:
-        filename = f"{ticker}_{period}_stock_price_chart.png"
+        filename = f"{ticker}_{period}_stock_price_chart.html"
 
     # Полный путь к файлу
     full_path = os.path.join(chart_folder, filename)
 
+    # Создание подграфиков
+    fig = sp.make_subplots(rows=16, cols=1, shared_xaxes=True, vertical_spacing=0.02)
+
+    # Построение графиков
+    fig.add_trace(plot_price_and_moving_average(data).data[0], row=1, col=1)
+    fig.add_trace(plot_price_and_moving_average(data).data[1], row=1, col=1)
+    fig.add_trace(plot_price_and_moving_average(data).data[2], row=1, col=1)
+    fig.add_trace(plot_price_and_moving_average(data).data[3], row=1, col=1)
+
+    fig.add_trace(plot_rsi(data).data[0], row=2, col=1)
+
+    fig.add_trace(plot_macd(data).data[0], row=3, col=1)
+    fig.add_trace(plot_macd(data).data[1], row=3, col=1)
+
+    fig.add_trace(plot_stochastic_oscillator(data).data[0], row=4, col=1)
+    fig.add_trace(plot_stochastic_oscillator(data).data[1], row=4, col=1)
+
+    fig.add_trace(plot_obv(data).data[0], row=5, col=1)
+
+    fig.add_trace(plot_cci(data).data[0], row=6, col=1)
+
+    fig.add_trace(plot_mfi(data).data[0], row=7, col=1)
+
+    fig.add_trace(plot_adl(data).data[0], row=8, col=1)
+
+    fig.add_trace(plot_parabolic_sar(data).data[0], row=9, col=1)
+
+    fig.add_trace(plot_ichimoku_cloud(data).data[0], row=10, col=1)
+    fig.add_trace(plot_ichimoku_cloud(data).data[1], row=10, col=1)
+    fig.add_trace(plot_ichimoku_cloud(data).data[2], row=10, col=1)
+    fig.add_trace(plot_ichimoku_cloud(data).data[3], row=10, col=1)
+    fig.add_trace(plot_ichimoku_cloud(data).data[4], row=10, col=1)
+
+    fig.add_trace(plot_vwap(data).data[0], row=11, col=1)
+
+    fig.add_trace(plot_atr(data).data[0], row=12, col=1)
+
+    fig.add_trace(plot_std_deviation(data).data[0], row=13, col=1)
+
+    fig.add_trace(plot_mean_closing_price(data).data[0], row=14, col=1)
+
+    fig.add_trace(plot_variance_closing_price(data).data[0], row=15, col=1)
+
+    fig.add_trace(plot_coefficient_of_variation(data).data[0], row=16, col=1)
+
+    # Обновление макета
+    fig.update_layout(height=2000, title_text=f"{ticker} Цена акций с течением времени")
+
     # Сохранение графика в файл
-    plt.tight_layout()
-    plt.savefig(full_path)
+    fig.write_html(full_path)
     print(f"График сохранен как {full_path}")
